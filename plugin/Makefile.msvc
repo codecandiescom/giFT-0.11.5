@@ -1,0 +1,79 @@
+# $Id: Makefile.msvc,v 1.7 2003/10/16 18:50:55 jasta Exp $
+
+
+!include ../Make.msvc
+
+
+DEFS = $(DEFS) -DLIBGIFTPROTO_EXPORT=__declspec(dllexport)
+DEFS = $(DEFS) -DGIFT_EXPORT=__declspec(dllexport)
+LIBS = $(LIBS) $(LIBGIFT_LIB)
+
+OBJECTS = \
+	protocol$(O) \
+	share$(O) \
+	share_hash$(O)
+
+	
+TARGETDLL = $(LIBGIFTPROTO_DLL)
+TARGETLIB = $(LIBGIFTPROTO_LIB)
+TARGETLIBSTATIC = $(LIBGIFTPROTO_STATIC)
+
+
+!if defined(dynamic) || defined(DYNAMIC)
+
+
+all: $(TARGETDLL)
+
+install: $(TARGETDLL)
+	@copy /y $(TARGETDLL) ..\..\libgift\proto\$(TARGETDLL)
+	@copy /y $(TARGETLIB) ..\..\libgift\proto\$(TARGETLIB)
+	@copy /y *.h ..\..\libgift\proto
+
+
+!else # !(defined(dynamic) || defined(DYNAMIC))
+
+
+all: $(TARGETLIBSTATIC)
+
+install:
+	@copy /y $(TARGETLIBSTATIC) ..\..\libgift\proto\$(TARGETLIBSTATIC)
+	@copy /y *.h ..\..\libgift\proto\
+
+
+!endif
+
+
+
+!if defined(dynamic) || defined(DYNAMIC)
+
+
+$(TARGETDLL): $(OBJECTS)
+	$(LD) $(LDFLAGS) -dll -out:$(TARGETDLL) -implib:$(TARGETLIB) \
+	      $(LIBS) $(OBJECTS)
+
+
+!else # !(defined(dynamic) || defined(DYNAMIC))
+
+
+$(TARGETLIBSTATIC): $(OBJECTS)
+	$(LT) -nologo -out:$(TARGETLIBSTATIC) $(OBJECTS)
+
+
+!endif
+
+
+clean :
+	@-del /Q /F *$(O)
+	@-del /Q /F $(TARGETDLL)
+	@-del /Q /F $(TARGETLIB)
+	@-del /Q /F $(TARGETLIBSTATIC)
+	@-del /Q /F *.exp
+	@-del /Q /F *.idb
+	@-del /Q /F *.ilk
+	@-del /Q /F *.pch
+	@-del /Q /F *.pdb
+	@-del /Q /F *.plg
+
+
+.c$(O):
+	$(CC) $(CFLAGS) $(DEFS) $(INCLUDES) -Fo$@ -c $<

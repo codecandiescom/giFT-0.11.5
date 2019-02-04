@@ -1,0 +1,133 @@
+# $Id: Makefile.msvc,v 1.34 2003/11/01 06:00:26 jasta Exp $
+
+!include ../Make.msvc
+
+LIBS = $(LIBS) $(LIBGIFT_LIB) $(LIBGIFTPROTO_LIB)
+
+# always need this currently because OpenFT uses symbols from giFT
+#!if defined(USE_LOADER)
+DEFS = $(DEFS) -DGIFTD_EXPORT=__declspec(dllexport)
+#!endif
+
+LOADEROBJ = "..\win32\loader$(O)"
+
+OBJECTS = \
+	daemon$(O) \
+	plugin$(O) \
+	download$(O) \
+	download_state$(O) \
+	if_event$(O) \
+	if_port$(O) \
+	if_message$(O) \
+	if_search$(O) \
+	if_share$(O) \
+	if_stats$(O) \
+	if_transfer$(O) \
+	giftd$(O) \
+	meta$(O) \
+	opt$(O) \
+	share_cache$(O) \
+	share_db$(O) \
+	share_local$(O) \
+	transfer$(O) \
+	upload$(O) \
+	meta\meta_avi$(O) \
+	meta\meta_image$(O) \
+	meta\meta_mp3$(O) \
+	meta\meta_mpeg$(O) \
+	meta\meta_ogg$(O) \
+	meta\meta_tag$(O)
+
+
+TARGET = $(GIFT_EXE)
+TARGETDLL = $(GIFT_DLL)
+TARGETLIB = $(GIFT_LIB)
+
+!if defined(dynamic) || defined(DYNAMIC)
+
+!if defined(USE_LOADER)
+
+all: $(TARGETDLL) $(TARGET)
+
+install: $(TARGETDLL) $(TARGET)
+	@copy /y $(TARGET)	..\..\libgift\$(TARGET)
+	@copy /y $(TARGETDLL)	..\..\libgift\$(TARGETDLL)
+	@copy /y $(TARGETLIB)	..\..\libgift\$(TARGETLIB)
+#	-@strip --strip-all	..\..\libgift\$(TARGET)
+
+
+!else #!if defined (USE_LOADER)
+
+all: $(TARGET)
+
+install: $(TARGET)
+	@copy /y $(TARGET)	..\..\libgift\$(TARGET)
+	@copy /y $(TARGETLIB)	..\..\libgift\$(TARGETLIB)
+#	-@strip --strip-all	..\..\libgift\$(TARGET)
+
+!endif
+
+
+!if defined(USE_LOADER)
+
+$(TARGETDLL): $(OBJECTS)
+	$(LD) $(LDFLAGS) -dll -out:$(TARGETDLL) -implib:$(TARGETLIB) \
+	      $(LIBS) $(OBJECTS)
+
+$(TARGET): $(LOADEROBJ)
+	$(LD) $(LDFLAGS) -out:$(TARGET) $(LIBS) $(GIFT_LIB) $(LOADEROBJ)
+
+!else #!if defined(USE_LOADER)
+
+$(TARGET): $(OBJECTS) 
+	$(LD) $(LDFLAGS) -out:$(TARGET) -implib:$(TARGETLIB) \
+	      $(LIBS) $(OBJECTS)
+
+!endif
+
+
+!else # !(defined(dynamic) || defined(DYNAMIC))
+
+
+!error "static linking of plugins not supported"
+
+LIBS      = $(LIBS) $(LIBGIFT_STATIC) $(LIBGIFTPROTO_STATIC)
+LDFLAGS   = $(LDFLAGS) \
+		-libpath:"../lib" \
+		-libpath:"../plugin" \
+		-libpath:"../OpenFT" \
+		-libpath:"../OpenFT/proto" \
+		-libpath:"../Gnutella"
+GIFT_LIBS = $(OPENFT_STATIC) $(GNUTELLA_STATIC)
+
+
+all: $(TARGET)
+
+
+install: $(TARGET)
+	@copy /y $(TARGET)	..\..\libgift\$(TARGET)
+#	-@strip --strip-all	..\..\libgift\$(TARGET)
+
+
+$(TARGET): $(OBJECTS)
+	$(LD) $(LDFLAGS) -out:$(TARGET) $(LIBS) $(GIFT_LIBS) $(OBJECTS)
+
+
+!endif # defined(dynamic) || defined(DYNAMIC)
+
+
+clean :
+	@-del /Q /F /S *$(O)
+	@-del /Q /F /S $(TARGET)
+	@-del /Q /F /S $(TARGETDLL)
+	@-del /Q /F /S $(TARGETLIB)
+	@-del /Q /F /S $(LOADEROBJ)
+	@-del /Q /F /S *.exp
+	@-del /Q /F /S *.idb
+	@-del /Q /F /S *.ilk
+	@-del /Q /F /S *.pch
+	@-del /Q /F /S *.pdb
+	@-del /Q /F /S *.plg
+
+.c$(O):
+	$(CC) $(CFLAGS) $(DEFS) $(INCLUDES) -Fo$@ -c $<

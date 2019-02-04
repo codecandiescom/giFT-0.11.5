@@ -1,0 +1,336 @@
+//Microsoft Developer Studio generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_INTRO DIALOG DISCARDABLE  0, 0, 317, 194
+STYLE WS_CHILD | WS_DISABLED | WS_CAPTION
+CAPTION "Introduction"
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "Welcome to the giFT Configuration Wizard",
+                    IDC_TITLE_TEXT,115,8,195,23
+    LTEXT           "This wizard will guide you through the configuration of giFT",
+                    IDC_STATIC,115,40,195,23
+    LTEXT           "To continue, click Next.",IDC_STATIC,115,179,76,8
+END
+
+IDD_FIREWALL DIALOG DISCARDABLE  0, 0, 318, 143
+STYLE WS_CHILD | WS_DISABLED | WS_CAPTION
+CAPTION "Firewall"
+FONT 8, "MS Sans Serif"
+BEGIN
+    CONTROL         "I am &not behind a firewall (or I don't know)",
+                    IDC_NOT_BEHIND_FIREWALL,"Button",BS_AUTORADIOBUTTON | 
+                    BS_MULTILINE | WS_GROUP | WS_TABSTOP,21,27,276,8
+    CONTROL         "I am behind a &firewall and can not receive incoming connections",
+                    IDC_BEHIND_FIREWALL,"Button",BS_AUTORADIOBUTTON | 
+                    WS_TABSTOP,21,51,218,10
+    CONTROL         "I can &receive connections on these ports:",
+                    IDC_SPECIFY_PORTS,"Button",BS_AUTORADIOBUTTON | 
+                    WS_TABSTOP,21,78,276,10
+    EDITTEXT        IDC_EDIT_OPENFT_PORT,69,101,40,12,ES_AUTOHSCROLL | 
+                    ES_NUMBER
+    EDITTEXT        IDC_EDIT_HTTP_PORT,165,100,40,12,ES_AUTOHSCROLL | 
+                    ES_NUMBER
+    LTEXT           "Are you behind a firewall?",IDC_STATIC,21,1,276,8
+    LTEXT           "&OpenFT port:",IDC_STATIC,21,103,43,8
+    LTEXT           "&HTTP port:",IDC_STATIC,127,102,36,8
+END
+
+IDD_DOWNLOAD_DIR DIALOG DISCARDABLE  0, 0, 318, 143
+STYLE WS_CHILD | WS_DISABLED | WS_CAPTION
+CAPTION "Completed Download Directory"
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "In which &directory will downloaded files end up?",-1,
+                    21,22,276,8
+    EDITTEXT        IDC_DOWNLOAD_DIR,21,55,170,12,ES_AUTOHSCROLL
+    PUSHBUTTON      "&Browse...",IDC_DOWNLOAD_BROWSE,196,54,50,13
+END
+
+IDD_SHARED_DIRS DIALOG DISCARDABLE  0, 0, 318, 143
+STYLE WS_CHILD | WS_DISABLED | WS_CAPTION
+CAPTION "Shared directories"
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "Which &directories would you like to share?",-1,21,22,
+                    276,8
+    LISTBOX         IDC_SHARED_DIRS_LIST,21,38,276,69,LBS_SORT | 
+                    LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "&Add...",IDC_ADD,192,111,50,14
+    PUSHBUTTON      "&Remove",IDC_REMOVE,247,111,50,14
+END
+
+IDD_NODE_CLASS DIALOG DISCARDABLE  0, 0, 318, 143
+STYLE WS_CHILD | WS_DISABLED | WS_CAPTION
+CAPTION "Node Class"
+FONT 8, "MS Sans Serif"
+BEGIN
+    CONTROL         "&Regular user node (recommended for most users)",
+                    IDC_RADIO_USER,"Button",BS_AUTORADIOBUTTON | 
+                    BS_MULTILINE | WS_GROUP | WS_TABSTOP,21,27,276,8
+    CONTROL         "&Search node (I have a fast internet connection && a fast CPU)",
+                    IDC_RADIO_SEARCH,"Button",BS_AUTORADIOBUTTON | 
+                    WS_TABSTOP,21,51,207,10
+    CONTROL         "&Index node  (I have a fast internet connection && ample RAM)",
+                    IDC_RADIO_INDEX,"Button",BS_AUTORADIOBUTTON | WS_TABSTOP,
+                    21,75,276,10
+    CONTROL         "S&earch && Index node  (I have a fast internet connection, a fast CPU, && ample RAM)",
+                    IDC_RADIO_SEARCH_INDEX,"Button",BS_AUTORADIOBUTTON | 
+                    WS_TABSTOP,21,98,276,10
+    LTEXT           "What kind of node would you like to be?",-1,21,1,276,8
+END
+
+IDD_FINISH DIALOG DISCARDABLE  0, 0, 317, 194
+STYLE WS_CHILD | WS_DISABLED | WS_CAPTION
+CAPTION "Finish"
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "Completing the giFT Configuration Wizard",
+                    IDC_TITLE_TEXT,115,8,195,23
+    LTEXT           "You have successfully completed the giFT Configuration Wizard.",
+                    IDC_STATIC,115,40,195,23
+    LTEXT           "Now click Finish to save the configuration.",IDC_STATIC,
+                    115,179,134,8
+END
+
+IDD_ALIAS DIALOG DISCARDABLE  0, 0, 318, 142
+STYLE DS_MODALFRAME | WS_CHILD | WS_DISABLED
+FONT 8, "MS Sans Serif"
+BEGIN
+    EDITTEXT        IDC_ALIAS,21,62,112,12,ES_AUTOHSCROLL
+    LTEXT           "Arbitrary &name you'd like to associate with your node. This field is optional and it is NOT to be trusted. The name is not unique to the network. Please do not choose useless aliases.",
+                    -1,21,35,290,20
+END
+
+IDD_INCOMING_DIR DIALOG DISCARDABLE  0, 0, 318, 143
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Incoming Download Directory"
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "In which &directory will files be stored while they are being downloaded?",
+                    -1,20,23,276,8
+    EDITTEXT        IDC_INCOMING_DIR,21,55,170,12,ES_AUTOHSCROLL
+    PUSHBUTTON      "&Browse...",IDC_INCOMING_BROWSE,196,54,50,13
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO DISCARDABLE 
+BEGIN
+    IDD_INTRO, DIALOG
+    BEGIN
+        LEFTMARGIN, 115
+        TOPMARGIN, 8
+        BOTTOMMARGIN, 187
+    END
+
+    IDD_FIREWALL, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 311
+        VERTGUIDE, 21
+        VERTGUIDE, 297
+        TOPMARGIN, 1
+        BOTTOMMARGIN, 142
+    END
+
+    IDD_DOWNLOAD_DIR, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 311
+        VERTGUIDE, 21
+        VERTGUIDE, 297
+        BOTTOMMARGIN, 142
+    END
+
+    IDD_SHARED_DIRS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 311
+        VERTGUIDE, 21
+        VERTGUIDE, 297
+        BOTTOMMARGIN, 142
+    END
+
+    IDD_NODE_CLASS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 311
+        VERTGUIDE, 21
+        VERTGUIDE, 297
+        TOPMARGIN, 1
+        BOTTOMMARGIN, 142
+    END
+
+    IDD_FINISH, DIALOG
+    BEGIN
+        LEFTMARGIN, 115
+        TOPMARGIN, 8
+        BOTTOMMARGIN, 187
+    END
+
+    IDD_ALIAS, DIALOG
+    BEGIN
+        LEFTMARGIN, 21
+        RIGHTMARGIN, 311
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 135
+    END
+
+    IDD_INCOMING_DIR, DIALOG
+    BEGIN
+        LEFTMARGIN, 20
+        RIGHTMARGIN, 311
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 136
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_WATERMARK           BITMAP  DISCARDABLE     "watermark.bmp"
+IDB_HEADER              BITMAP  DISCARDABLE     "header.bmp"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDI_ICON1               ICON    DISCARDABLE     "giftsetup_32.ico"
+IDI_ICON2               ICON    DISCARDABLE     "giftsetup_16.ico"
+
+#ifndef _MAC
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 0,0,10,0
+ PRODUCTVERSION 0,0,10,0
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x40004L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904b0"
+        BEGIN
+            VALUE "Comments", "\0"
+            VALUE "CompanyName", " \0"
+            VALUE "FileDescription", "giFTsetup\0"
+            VALUE "FileVersion", "0, 0, 10, 0\0"
+            VALUE "InternalName", "giFTsetup\0"
+            VALUE "LegalCopyright", "Copyright © 2002 giFT Project (http://giftproject.org/). All Rights Reserved\0"
+            VALUE "LegalTrademarks", "\0"
+            VALUE "OriginalFilename", "giFTsetup.exe\0"
+            VALUE "PrivateBuild", "\0"
+            VALUE "ProductName", "  giFTsetup\0"
+            VALUE "ProductVersion", "0, 0, 10, 0\0"
+            VALUE "SpecialBuild", "\0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END
+
+#endif    // !_MAC
+
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// Swedish resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_SVE)
+#ifdef _WIN32
+LANGUAGE LANG_SWEDISH, SUBLANG_DEFAULT
+#pragma code_page(1252)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+#endif    // Swedish resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

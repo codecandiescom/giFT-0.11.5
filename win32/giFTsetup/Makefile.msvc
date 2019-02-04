@@ -1,0 +1,61 @@
+# $Id: Makefile.msvc,v 1.6 2003/10/16 18:50:56 jasta Exp $
+
+
+!include ../../Make.msvc
+
+
+DEFS     = $(DEFS) -D_WINDOWS -U_CONSOLE
+LDFLAGS  = $(LDFLAGS) /subsystem:windows
+
+
+LIBS = $(LIBS) comctl32.lib gdi32.lib shell32.lib
+
+
+EXENAME=giFTsetup
+
+
+OBJECTS = \
+	$(EXENAME)$(O)
+	
+TARGET = $(EXENAME).exe
+
+
+!if defined(dynamic) || defined(DYNAMIC)
+
+
+LIBS = $(LIBS) $(LIBGIFT_LIB)
+
+
+!else # !(defined(dynamic) || defined(DYNAMIC))
+
+
+LIBS = $(LIBS) $(LIBGIFT_STATIC)
+
+
+!endif
+
+all: $(TARGET)
+
+$(EXENAME).res : $(EXENAME).rc
+	rc.exe /l 0x41d /fo"$(EXENAME).res" $(DEFS) $(EXENAME).rc
+
+
+$(TARGET): $(OBJECTS) $(EXENAME).res
+	$(LD) $(LDFLAGS) -out:$(TARGET) $(LIBS) $(OBJECTS) $(EXENAME).res
+
+install: all
+
+clean :
+	@-del /Q /F *$(O)
+	@-del /Q /F $(TARGET)
+	@-del /Q /F *.exp
+	@-del /Q /F *.idb
+	@-del /Q /F *.ilk
+	@-del /Q /F *.pch
+	@-del /Q /F *.pdb
+	@-del /Q /F *.plg
+	@-del /Q /F *.res
+
+
+.c$(O):
+	$(CC) $(CFLAGS) $(DEFS) $(INCLUDES) -Fo$@ -c $<

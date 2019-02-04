@@ -1,0 +1,94 @@
+.TH giFT 1 "13 April 2003" "giFT version 0.10.0"
+.SH NAME
+giftd \- Daemon component for the giFT project
+.SH SYNOPSIS
+.BR giFT " [ " options "... ]"
+.SH DESCRIPTION
+.B giftd
+is a modular deamon capable of abstracting the communication between the end
+user and specific filesharing protocols (peer-to-peer or otherwise).  This
+giFT daemon is the main core of the system, but will not be useful without a
+controlling interface (known as a giFT client or interface) and a protocol
+plugin.
+.P
+Please note that the bulk of the run-time options are controlled through the
+daemon and plugin configuration files.  See the
+.BR FILES
+section for more information.
+.SH OPTIONS
+.TP
+.BR -h ", " --help
+Show a short overview of all options
+.TP
+.BR -V ", " --version
+Output version information and exit.
+.TP
+.BR -d ", " --daemon
+Fork to the background as a daemon would.
+.TP
+.BR -x ", " --index-only
+Update the shares database and exit
+.TP
+.BR -o<VAL> ", " --opt=<VAL>
+Run-time configuration override.  The format of the value string is as
+follows:
+
+plugin:/group/key=value
+
+For example, if you wish to change OpenFT's lan_mode switch via this
+interface, you would use:
+
+openft:/local/lan_mode=1
+.TP
+.BR -p<VAL> ", " --protocol=<VAL>
+Load the specified plugin (overrides
+.BR giftd.conf (5)).
+from file.  Plugins specified here can be treated as a single member in
+gift:/main/plugins.  You may specify this option multiple times on the command
+line.
+.TP
+.BR -q ", " --quiet
+Disable logging entirely.  Overrides -v and -l.
+.TP
+.BR -v ", " --verbose
+Increase the verbosity level (default=0).  Currently, the only meaningful
+level is 1, where all output will be printed to the normal log facility, as
+well as to stderr.  If you wish to change the default logging path to stderr
+only, you should use -v in conjunction with -l/dev/null.
+.TP
+.BR -l<VAL> ", " --logfile=<VAL>
+Use the log path specified by <VAL> instead of the default ~/.giFT/giftd.log.
+.SH FILES
+.TP
+.I ~/.giFT/giftd.conf
+Generic configuration for giFT, see
+.BR giftd.conf (5)
+for more information
+.TP
+.I ~/.giFT/giftd.log
+Debug information. A clean file is used every startup.
+.TP
+.I ~/.giFT/access.log
+Apache-style access log. Can be used to generate fancy statistics, although
+it's not very reliable. (Often only chunks of files have been downloaded from
+you.)
+.TP
+.I ~/.giFT/shares
+Share database containing all cached meta and hashing data about your shares.
+Removal of this file will force a clean rebuild of all this data.
+.SH BUGS
+.B giFT
+is currently development software.  This means that the stability of the
+project cannot always be guaranteed, and as such we strongly encourage
+constructive debugging feedback that will help us mature the project as best
+we can.  Please consult the documentation available at
+http://www.giftproject.org/ so that you might use the proper channels
+requested by the development staff.
+.SH AUTHORS
+Josh Guilfoyle <jasta@gotlinux.org>
+.br
+Eelco Lempsink <eelco@33lc0.net>
+.SH "SEE ALSO"
+.BR giftd.conf (5),
+.BR OpenFT.conf (5),
+http://gift.sourceforge.net/docs.php

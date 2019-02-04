@@ -1,0 +1,126 @@
+$Id: QUICKSTART,v 1.6 2003/07/21 22:29:39 jasta Exp $
+
+FOREWORD
+========
+
+Thank you for taking the time to try out giFT!  Please note that this software
+is in alpha stage and has not been thoroughly stress tested (that's what
+you're here for, actually *grin*).  If you experience any problems
+(specifically if the problems are related to fatal software bugs), please take
+a look at one of the following sources to learn how you can help the
+developers track down the bug:
+
+  http://wand.cs.waikato.ac.nz/~dhtrl1/pl5/gdb.html
+  http://users.actcom.co.il/~choo/lupg/tutorials/debugging/debugging-with-gdb.html
+
+Please try to save the state of the crash until a developer (or someone else
+with knowledge of the project's development) can check it out and make sure
+the bug has either been fixed after your crash or determine what it is related
+to.  Obviously it's very difficult to fix bugs we don't know about...
+
+
+SETUP
+=====
+
+First you should download and install the plugins you wish to load through
+giftd.  No plugins come default (this is changed behaviour from pre-0.11.2),
+so you will need to be sure to download at least one independent of this
+distribution.
+
+Now you will need to create a local configuration for your current user.  This
+can be done using the gift-setup tool which acts as a very basic interface to
+the default config files.  If you would like to edit these files by hand you
+can copy the relevant documentation from the etc/ distribution directory to
+$HOME/.giFT.  giftd will refuse to start unless you edit the configuration
+files properly, so please read carefully!
+
+Please make sure to select the plugins you wish to load in the configuration
+unless you plan to override on the command line using the --protocol (or -p)
+switch.  For a list of available plugins you can use the --version (or -V)
+switch, although this cannot be used until after a basic functioning
+giftd.conf is in place (whacky internal design, sorry).  Be sure to run
+gift-setup again after you install each additional plugin so that you can be
+certain it is properly configured!
+
+If you are wondering where the FastTrack plugin is, it is not a part of our
+standard distribution and is in fact a separately maintained project that
+works with giFT.  See http://developer.berlios.de/projects/gift-fasttrack for
+more information on how to obtain the plugin.  Be sure to submit any bugs
+specific to the FastTrack plugin to the appropriate developers.
+
+
+RUNNING
+=======
+
+Remember that the giftd binary you are likely interacting with is just a
+simple daemon intended to be used through the interface protocol over TCP/IP
+sockets.  By default only machines within your local network can access the
+interface port, however additional security may be defined and may even be
+turned on by default in the future.
+
+The most basic invocation will look something like:
+
+  # giftd -d
+
+Which will then fork to the background and detach from your controlling
+terminal.  This does not necessarily mean the daemon is ready to accept
+interface connections yet, simply that it has begun initialization.  You can
+consult the log file found in $HOME/.giFT/giftd.log by default for more
+information on what's going on.
+
+To test your daemon run the giFTcurs program (available at
+http://www.nongnu.org/giftcurs), which will attempt to connect to the daemon
+on the host and port you configured in $HOME/.giFT/ui/ui.conf.
+
+WARNING: Invocation of giftd will automatically try to regenerate your local
+shares database which may cause your system to become unresponsive and
+maintain a much higher-than-normal load.  This is because each protocol loaded
+must read and generate an appropriate hash (MD5 or SHA-1 are the most common
+algorithms used) for the shares.  Remember that giFT will only create hashes
+for files that have changed since the last hash or if its shares database has
+been removed or truncated.  Renaming (no inode tracking, sorry) or adding new
+files will also cause those to be rehashed.
+
+It is sometimes common for certain files to give giFT trouble with its hashing
+and meta data extraction routines (lots of untested code folks).  If you
+suspect a problem with your share hashing you can examine the operation more
+closely using the following command:
+
+  # giftd -xv
+
+See the manual entry for more information on what these command options
+actually do.
+
+
+MAINTENANCE
+===========
+
+Remember that most peer-to-peer networks are not perfect and may often need a
+little nudge from users to keep them operational.  Specifically, you need to
+make sure the protocol plugins have the necessary caches of nodes which they
+will use to make their initial entry into the network.  If this file is
+largely out of date (especially if you haven't used giFT in a while) then it
+is likely you will not be able to find a new node to connect to and thus it
+will seem that giFT is doing "nothing".
+
+To correct this problem you may need to examine the contents of your
+$HOME/.giFT/{plugin} directories and replace the nodes or cache files that are
+appropriate.  For example, you can replace OpenFT's local nodes cache with the
+global default provided by us by simply removing the $HOME/.giFT/OpenFT/nodes
+and starting the daemon (do not remove while it is running).  This may or may
+not provide a higher quality nodes file depending on the age of your OpenFT
+version and other factors.  I wish I could be more helpful than that, sigh.
+
+
+PROBLEMS
+========
+
+Surely no, giFT is perfect!  Err, I mean if you have any problems with this
+process you can usually find support by following the appropriate channels
+defined in:
+
+  http://www.giftproject.org/contact.php
+
+Do not assume that the IRC channel is an appropriate place to ask for support,
+because it isn't.  Asking questions there would be quite rude without reading
+the contact page first.

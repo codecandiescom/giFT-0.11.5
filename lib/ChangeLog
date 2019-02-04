@@ -1,0 +1,32 @@
+$Id: ChangeLog,v 1.10 2003/12/23 18:35:45 jasta Exp $
+
+libgift 0.11.5:
+
+   * Minor updates to the following interfaces:
+
+      conf.c
+      dataset.c
+      strobj.c
+      stopwatch.c
+
+   * Fixed a bug where it may be possible for a timer callback to remove a
+     newly registered timer with a FALSE return value.
+
+   * Major win32 portability improvements.
+
+libgift 0.11.4:
+
+   * Synchronized the version to match giftd.
+
+libgift 0.11.3:
+
+   * Synchronized the version to match giftd.
+
+libgift 0.11.2:
+
+   * Minor conf.c changes for the giftd.conf move.  Perhaps this logic should
+     be in giftd instead of libgift?
+
+libgift 0.11.1:
+
+   * Synchronized the version to match giftd.

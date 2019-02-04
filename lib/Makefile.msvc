@@ -1,0 +1,90 @@
+# $Id: Makefile.msvc,v 1.17 2003/10/16 18:50:54 jasta Exp $
+
+
+!include ../Make.msvc
+
+DEFS = $(DEFS) -DLIBGIFT_EXPORT=__declspec(dllexport)
+
+OBJECTS = \
+	array$(O) \
+	conf$(O) \
+	tcpc$(O) \
+	dataset$(O) \
+	event$(O) \
+	fdbuf$(O) \
+	file$(O) \
+	interface$(O) \
+	libgift$(O) \
+	list$(O) \
+	list_lock$(O) \
+	tree$(O) \
+	log$(O) \
+	memory$(O) \
+	network$(O) \
+	parse$(O) \
+	platform$(O) \
+	stopwatch$(O) \
+	strobj$(O) \
+	mime$(O)
+	
+TARGETDLL = $(LIBGIFT_DLL)
+TARGETLIB = $(LIBGIFT_LIB)
+TARGETLIBSTATIC = $(LIBGIFT_STATIC)
+
+!if defined(dynamic) || defined(DYNAMIC)
+
+all: $(TARGETDLL)
+
+install: $(TARGETDLL)
+	@copy /y $(TARGETDLL) ..\..\libgift\$(TARGETDLL)
+	@copy /y $(TARGETLIB) ..\..\libgift\$(TARGETLIB)
+	@copy /y *.h ..\..\libgift
+
+!else # !(defined(dynamic) || defined(DYNAMIC))
+
+
+all: $(TARGETLIBSTATIC)
+
+install: $(TARGETLIBSTATIC)
+	@copy /y $(TARGETLIBSTATIC) ..\..\libgift\$(TARGETLIBSTATIC)
+	@copy /y *.h ..\..\libgift\
+
+
+!endif # defined(dynamic) || defined(DYNAMIC)
+
+
+
+
+!if defined(dynamic) || defined(DYNAMIC)
+
+
+$(TARGETDLL): $(OBJECTS) 
+	$(LD) $(LDFLAGS) -dll -out:$(TARGETDLL) -implib:$(TARGETLIB) \
+	      $(LIBS) $(OBJECTS)
+
+
+!else # !(defined(dynamic) || defined(DYNAMIC))
+
+
+$(TARGETLIBSTATIC): $(OBJECTS)
+	$(LT) -nologo -out:$(TARGETLIBSTATIC) $(OBJECTS)
+
+
+!endif # defined(dynamic) || defined(DYNAMIC)
+
+
+clean :
+	@-del /Q /F *$(O)
+	@-del /Q /F $(TARGETDLL)
+	@-del /Q /F $(TARGETLIB)
+	@-del /Q /F $(TARGETLIBSTATIC)
+	@-del /Q /F *.exp
+	@-del /Q /F *.idb
+	@-del /Q /F *.ilk
+	@-del /Q /F *.pch
+	@-del /Q /F *.pdb
+	@-del /Q /F *.plg
+
+
+.c$(O):
+	$(CC) $(CFLAGS) $(DEFS) $(INCLUDES) -Fo$@ -c $<

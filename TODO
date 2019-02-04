@@ -1,0 +1,41 @@
+$Id: TODO,v 1.52 2003/08/15 23:03:53 jasta Exp $
+
+Documentation:
+
+  * Update documentation...we needs lots of help here.
+
+Design:
+
+  * Add an HTTP/HTML default web interface built into the daemon that can
+    be used to supplement the features not provided by the interface protocol.
+  * Allow for greater control of giFT behaviour from plugins, including
+    the ability to control multi-source transfer chunk boundaries.
+  * Improve the interface protocol and internals related to uploads and their
+    usage of the Source object.  This conceptual link should not be made and
+    it is actually causing problems with the plugin interface for uploads.
+  * Greatly improved security mechanism for interface protocol connections,
+    including an option to use a local named socket.
+  * Add automatic source searching to the daemon (possibly provide hooks for
+    plugins to use to extend the behaviour more intelligently).
+
+Code:
+
+  * Switch to the newly introduced BOOL libgift type.
+  * Doxygen the entire project.
+  * Transfer system rewrite (pending in jasta's local source tree, but not
+    yet completed).
+
+    UNIX:
+
+      * Test for fork's presence and implement a blocking platform_child_proc
+        if it's nowhere to be found.
+
+    Windows:
+
+      * Add code (in win32/) to run giFT as an NT/2000/XP service.
+
+  * Break away Gnutella and OpenFT into their own separate CVS modules and
+    partially decouple the release schedule.
+
+
+...and lots more...

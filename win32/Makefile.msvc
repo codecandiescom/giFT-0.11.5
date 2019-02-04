@@ -1,0 +1,42 @@
+# $Id: Makefile.msvc,v 1.9 2003/10/16 18:50:55 jasta Exp $
+
+!include ../Make.msvc
+
+# need to remove ../lib from INCLUDES because lib/memory.h collides
+# with standard memory.h required by ltdl.c
+INCLUDES = -I. -I..
+DEFS = $(DEFS) -DLTDL_OBJDIR=\"\"
+
+OBJECTS = \
+	getopt$(O) \
+	ltdl$(O)
+
+TARGET = win32.lib
+
+COMPILE = $(CC) $(DEFS) $(INCLUDES) $(CFLAGS)
+
+all : $(TARGET)
+
+install : $(TARGET)
+	@copy /y $(TARGET)	..\..\libgift\win32\$(TARGET)
+	@copy /y config.h	..\..\libgift\win32
+	@copy /y giftconfig_win32.h	..\..\libgift\win32
+
+clean :
+	echo $(BUILD_ROOT)
+	@-del /Q /F *$(O)
+	@-del /Q /F $(TARGET)
+	@-del /Q /F *.exp
+	@-del /Q /F *.idb
+	@-del /Q /F *.ilk
+	@-del /Q /F *.pch
+	@-del /Q /F *.pdb
+	@-del /Q /F *.plg
+
+$(TARGET) : $(OBJECTS)
+	@lib -nologo -out:$(TARGET) $(OBJECTS)
+
+.c$(O):
+	$(COMPILE) -Fo$@ -c $<
+
+#eof

@@ -1,0 +1,4 @@
+$Id: README,v 1.1 2003/06/30 09:15:21 jasta Exp $
+
+This source code pertains directly to the daemon portion of the code.  Add
+more documentation on what the giFT daemon does here.

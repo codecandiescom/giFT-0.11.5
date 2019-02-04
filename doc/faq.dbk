@@ -1,0 +1,344 @@
+<?xml version="1.0"?>
+<!--
+###############################################################################
+##
+## vim: set ts=2 sts=2 ft=xml tw=90 sw=2: -*- html -*-
+##
+## $Id: faq.dbk,v 1.7 2003/08/27 10:50:02 eelcol Exp $
+##
+## Module:         Frequently Asked Questions
+## Description:    All the questions you should have read before you asked them
+##
+## Copyright (C) 2001-2003 giFT project (gift.sourceforge.net)
+##
+## This program is free software; you can redistribute it and/or modify it
+## under the terms of the GNU General Public License as published by the
+## Free Software Foundation; either version 2, or (at your option) any
+## later version.
+##
+## This program is distributed in the hope that it will be useful, but
+## WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+## General Public License for more details.
+##
+###############################################################################
+-->
+<!DOCTYPE article PUBLIC '-//OASIS//DTD DocBook XML V4.2//EN'
+  'file:///usr/share/sgml/docbook/dtd/xml/4.2/docbookx.dtd'>
+<article class='faq'>
+	<articleinfo>
+		<title>giFT FAQ</title>
+		<author><firstname>Eelco</firstname><surname>Lempsink</surname></author>
+		<abstract>
+			<para>
+				All the questions you should have read before you asked them
+			</para>
+		</abstract>
+	</articleinfo>
+	<sect1>
+		<title>Generic</title>
+		<qandaset defaultlabel="qanda">
+			<qandaentry>
+				<question><para>What is giFT?</para></question>
+				<answer>
+					<para>
+						giFT is a modular daemon capable of abstracting the communication between the
+						end user and specific filesharing protocols (peer-to-peer or otherwise). The
+						giFT project differs from many other similar projects in that it is a
+						distribution of a standalone platform-independent daemon, a library for
+						client/frontend development, and our own homegrown network, OpenFT.
+					</para>
+				</answer>
+			</qandaentry>
+			<qandaentry>
+				<question><para>How do I get giFT?</para></question>
+				<answer>
+					<para>
+						You can download the latest release from our 
+						<ulink url="http://sourceforge.net/project/showfiles.php?group_id=34618">Sourceforge File list</ulink>,
+						and (for most UNIX platforms) follow the instructions from the 
+						<ulink url="http://gift.sourceforge.net/docs.php?document=install-unix.html">Installation Guide</ulink>.
+						Please note that downloading giFT means the daemon (<command>giftd</command>),
+						you'll want to download at least one network plugin, and a 
+						<ulink url='http://gift.sourceforge.net/clients.php'>client</ulink>.
+					</para>
+					<para>
+						There are also packages available in 
+						<ulink url="http://www.debian.org">Debian</ulink> unstable.  You do a
+						<command>apt-get install gift</command>.  Other distributions might have
+						packages available too.
+					</para>
+				</answer>
+				<answer>
+					<para>
+						For <emphasis role="strong">Windows</emphasis> the installation procedure is a
+						little more complicated.  As the Windows maintainer hasn't really been very
+						active lately (*cough* same could be said for the doc writer *cough*), the
+						Windows version is currently broken.  We could use help fixing this!
+					</para>
+				</answer>
+				<answer>
+					<para>
+						For <emphasis role="strong">Mac OS X</emphasis> you should use 
+						<ulink url="http://fink.sourceforge.net">fink</ulink>.
+					</para>
+				</answer>
+			</qandaentry>
+			<qandaentry>
+				<question><para>What's with the name?</para></question>
+				<answer>
+					<para>
+						As you might know there's an other project named GIFT as well (note the
+						capitalization though).  The 
+						<ulink url="http://www.gnu.org/software/gift/">GNU Image Finding Tool</ulink> 
+						that is.
+					</para>
+					<para>
+						The strange capitalization is from back when the giFT project still was a
+						'generic interface to FastTrack' and (a little later) 'giFT isn't FastTrack'.
+						When the encryption was changed which effectively locked giFT out of the
+						FastTrack network (used by KaZaA, and at that time Grokster and Morpheus), the
+						project moved in another direction, becoming what it is now: giFT: internet
+						File Transfer.
+					</para>
+				</answer>
+			</qandaentry>
+			<qandaentry>
+				<question><para>Why do you use a daemon?</para></question>
+				<answer>
+					<para>
+						It creates an easy way for people to focus their time on frontends instead of
+						all of so much networking code. Also, if the daemon changes, all of the
+						frontends will still function the same as they had before. This also makes it
+						so we don't end up with 20 incompatible protocols flying around as standalone
+						clients.
+					</para>
+				</answer>
+			</qandaentry>
+			<qandaentry>
+				<question><para>What's your history (so far)?</para></question>
+				<answer>
+					<para>
+						Development to create a Linux client to KaZaA was our initial goal. After a
+						lot of reverse engineering and packet sniffing, a group of talented developers
+						which became known as "the givers" stumbled onto our project (at the time
+						"kazaatux").
+					</para>
+					<para>
+						Within a few weeks, we had a working daemon that could connect to and search
+						the KaZaA network.  Shortly after, KaZaA released a new version of their
+						client which eventually led to the breaking of what we now call giFT.
+					</para>
+					<para>
+						After the permanent departure of the givers, the giFT team started moving
+						development into a new direction; foremost was the desire to have a completely
+						open, completely free peer to peer network modeled in the image of FastTrack.
+					</para>
+					<para>
+						Thus OpenFT was born. giFT was moved to a new plugin architecture which would
+						allow the creation of plugins that would make it easy for one client to be
+						compatible with any number of networks.  The first of these plugins were to be
+						OpenFT.  After a while there came a Gnutella plugin, and even a 
+						<ulink url="http://developer.berlios.de/projects/gift-fasttrack/">FastTrack plugin</ulink>!
+					</para>
+				</answer>
+			</qandaentry>
+		</qandaset>
+	</sect1>
+	<sect1>
+		<title>Contribute</title>
+		<qandaset defaultlabel="qanda">
+			<qandaentry>
+				<question><para>How can I help?</para></question>
+				<answer>
+					<para>
+						Use your special skills! If you can code (e.g. a new network plugin), design a
+						nifty GUI or are specialized in Public Relations, or whatever, 
+						<ulink url="http://gift.sourceforge.net/contact.php">contact us</ulink> and
+						ask what you can do.  Also, clear bug reports, patches and more documentation
+						are always welcome.
+					</para>
+				</answer>
+			</qandaentry>
+			<qandaentry id='crash'>
+				<question><para>Aargh, <command>giftd</command> crashed! What now?</para></question>
+				<answer>
+					<para>
+						You've most likely found a bug.  Try upgrading to the most recent release, and
+						if you did that already please write a clear bug report.
+					</para>
+					<para>
+						If you're a developer you could also try the most recent CVS version (it could
+						have been fixed already). Make sure you know how to use gdb, or else you
+						probably won't be very helpful.
+					</para>
+					<para><emphasis>
+						Please make sure you report the bug to the right project.  We are not
+						responsible for 3rd party network plugins, and <command>giftd</command> uses
+						quite a few libs for metadata extraction, a few of those libs tend to be kind
+						of buggy.  If you're not sure the bug you found is purely giFT's, don't
+						report.
+					</emphasis></para>
+				</answer>
+			</qandaentry>
+			<qandaentry>
+				<question><para>I want to make an OpenFT client! How do I do that?</para></question>
+				<answer>
+					<para>
+						No, you don't. You want to make a giFT client. Through giFT, OpenFT can be
+						used. Otherwise you'll have to include a framework just like giFT in your
+						client, and that would be like reinventing the wheel.
+					</para>
+				</answer>
+			</qandaentry>
+			<qandaentry>
+				<question><para>I would like to make a frontend/client/gui, where to start?</para></question>
+				<answer>
+					<para>
+						Very good, but please note that there are already lots of 
+						<ulink url="http://gift.sourceforge.net/clients.php">clients</ulink>, just do
+						a search on <ulink url="http://sourceforge.net">SourceForge</ulink> for
+						example.  In other words, make sure your client is actually different from all
+						the others, and it's "killer feature" is not something you can easily build
+						into an already mature client.
+					</para>
+					<para>
+						That said, there are roughly two ways to make a client.  You can use libgift
+						(see <filename>lib/example.c</filename> for an example, or you can communicate
+						with the 
+						<ulink url="http://gift.sourceforge.net/docs.php?document=interface.html">Interface Protocol</ulink>
+						over a socket.
+					</para>
+				</answer>
+			</qandaentry>
+			<qandaentry id='plugin'>
+				<question><para>I want to make a new network plugin, can you give me some hints?</para></question>
+				<answer>
+					<para>
+						Network plugins work through libgiftproto and libgift.  Unfortunately, there
+						is no tutorial for writing a network plugin, but you can generate doxygen
+						documentation from the sources, and look at other plugins to find out how it
+						is supposed to work.
+					</para>
+				</answer>
+			</qandaentry>
+		</qandaset>
+	</sect1>
+	<sect1>
+		<title>Problems</title>
+		<qandaset defaultlabel="qanda">
+			<qandaentry>
+				<question><para>Hey, giFT won't connect! (Before I updated it was fine) What's up?</para></question>
+				<answer>
+					<para>
+						Aha, first of all, giFT itself isn't connecting to anything, so you probably
+						mean OpenFT won't connect.  Due to heavy development sometimes new OpenFT
+						versions aren't backwards compatible.  Removing your nodes file
+						(<filename>~/.giFT/OpenFT/nodes</filename>) will usually help.  Removing it
+						will cause OpenFT's node cache to be updated with the installed version of the
+						nodes file.
+					</para>
+				</answer>
+			</qandaentry>
+			<qandaentry>
+				<question><para>Hmm, <command>giftd</command> crashed, what now?</para></question>
+				<answer>
+					<para>
+						See <link linkend='crash'>this question</link>.
+					</para>
+				</answer>
+			</qandaentry>
+			<qandaentry>
+				<question><para>Help! Why does <command>giftd</command> almost bring my system to a halt?</para></question>
+				<answer>
+					<para>
+						Ah, you're running <command>giftd</command> for the first time...
+						<command>giftd</command> is calculating the checksums ('hashing') of all your
+						files the network plugins need to uniquely identify them.  Also, metadata is
+						extracted.  The next time you start <command>giftd</command> only the files
+						that were added or changed will be hashed.
+					</para>
+				</answer>
+			</qandaentry>
+			<qandaentry>
+				<question><para>I run <command>giftd</command>, but nothing happens?</para></question>
+				<answer>
+					<para>
+						Indeed.  giftd is just the daemon.  You need a 
+						<ulink url="http://gift.sourceforge.net/clients.php">client</ulink> and
+						network plugins to make stuff happen.
+					</para>
+				</answer>
+			</qandaentry>
+			<qandaentry>
+				<question><para>It complains about my setup being incomplete, I don't get it?</para></question>
+				<answer>
+					<para>
+						Run <command>gift-setup</command>.  If you've already done this, do it again,
+						and try to read <emphasis>all</emphasis> the questions this time, the defaults
+						won't get it running.
+					</para>
+				</answer>
+			</qandaentry>
+		</qandaset>
+	</sect1>
+	<sect1>
+		<title>Network plugins</title>
+		<qandaset defaultlabel="qanda">
+			<qandaentry>
+				<question><para>What networks are supported?</para></question>
+				<answer>
+					<para>
+						Of course there's OpenFT, our own homegrown network, but there are also
+						plugins for Gnutella (distributed by us too) and 
+						<ulink url="http://developer.berlios.de/projects/gift-fasttrack/">FastTrack (KaZaA)</ulink>.
+						A plugin for
+						<ulink url="http://developer.berlios.de/projects/gift-opennap/">OpenNap</ulink>
+						is in development.
+					</para>
+				</answer>
+			</qandaentry>
+			<qandaentry>
+				<question><para>I want to make a new network plugin, how do I do that?</para></question>
+				<answer>
+					<para>
+						See <link linkend='plugin'>this question</link>
+					</para>
+				</answer>
+			</qandaentry>
+			<qandaentry>
+				<question><para>Wow, KaZaA on Linux/Mac OS X how did you guys manage that?</para></question>
+				<answer>
+					<para>
+						We didn't ;-)  The 
+						<ulink url="http://developer.berlios.de/projects/gift-fasttrack/">FastTrack plugin</ulink>
+						is a 3rd party plugin.  It was made after a lot of reverse engineering.  You
+						can check #gift-fasttrack @ irc.freenode.net for more information.
+					</para>
+				</answer>
+			</qandaentry>
+			<qandaentry>
+				<question><para>(I'm doing a thesis on P2P networks) is there documentation on how OpenFT works?</para></question>
+				<answer>
+					<para>
+						Unfortunately not.  In short, it's a hierarchical, clustering p2p network,
+						with USER nodes (normal users), SEARCH nodes (for searching) and INDEX nodes
+						(stats and SEARCH node lists).  Every USER has a PARENT node (which is a
+						SEARCH node) through which it searches.  For more information, UTSL :-) (And
+						in case of writing a thesis, search for the others.)
+					</para>
+				</answer>
+			</qandaentry>
+		</qandaset>
+	</sect1>
+</article>
+<!-- template:
+			<qandaentry>
+				<question><para></para></question>
+				<answer>
+					<para>
+
+					</para>
+				</answer>
+			</qandaentry>
+-->

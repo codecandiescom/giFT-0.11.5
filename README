@@ -1,0 +1,22 @@
+$Id: README,v 1.18 2003/07/24 11:42:05 jasta Exp $
+
+If you are a new user to the project, please refer to the QUICKSTART guide. If
+you are having troubles and would like support please see
+http://www.giftproject.org/contact.php for information on where to send
+requests.  Please keep the non-developer traffic in our IRC channel to an
+absolute minimum.
+
+Please note that our documentation is quite the mess, and in fact most of it
+does not apply any longer.  If you are interested in improving it, please
+contact the project administrators and we will gladly get you started.
+
+===============================================================================
+
+Do not confuse this project with GIFT (GNU Image Finding Tool), which is
+available at http://www.gnu.org/software/gift/.  Both projects were created
+around a similar time (early 2001, I believe) and unfortunately realized the
+collision well after both projects had settled in.
+
+Also note that the name OpenFT inadvertently conflicts with a product from
+Fujitsu-Siemens named openFT.  Interestingly enough though their product
+doesn't appear to be open at all; it is a wonder why they chose that name.

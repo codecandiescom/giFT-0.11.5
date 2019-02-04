@@ -1,0 +1,327 @@
+<?xml version="1.0"?>
+<!--
+###############################################################################
+##
+## vim: set ts=2 sts=2 ft=xml tw=90 sw=2: -*- html -*-
+##
+## $Id: install-win32.dbk,v 1.4 2003/11/10 23:31:31 jasta Exp $
+##
+## Module:         Windows Installation Guide
+## Description:    Instructions for building, configuring, and using giFT on
+##                 Microsoft Windows.
+##
+## Copyright (C) 2001-2003 giFT project (gift.sourceforge.net)
+##
+## This program is free software; you can redistribute it and/or modify it
+## under the terms of the GNU General Public License as published by the
+## Free Software Foundation; either version 2, or (at your option) any
+## later version.
+##
+## This program is distributed in the hope that it will be useful, but
+## WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+## General Public License for more details.
+##
+###############################################################################
+  -->
+<!DOCTYPE article PUBLIC '-//OASIS//DTD DocBook XML V4.1.2//EN'
+  'file:///usr/share/sgml/docbook/dtd/xml/4.1.2/docbookx.dtd'>
+<article>
+	<articleinfo>
+		<title>giFT/OpenFT's Installation Guide for Windows</title>
+	  <authorgroup>
+			<author>
+				<firstname>Ross</firstname>
+				<surname>Smith</surname>
+				<contrib>Original version</contrib>
+			</author>
+			<author>
+				<firstname>Markus</firstname>
+				<surname>Kern</surname>
+				<contrib>Major revision</contrib>
+			</author>
+		</authorgroup>
+		<abstract>
+			<para>
+				This document explains building giFT using Microsoft
+				Visual Studio 6.0.
+			</para>
+		</abstract>
+	</articleinfo>
+	<sect1>
+		<title>Introduction</title>
+		<para>
+			A small notice to begin with.
+			The windows port may not always be up to date with the rest of giFT
+			and hence you are on your own when building giFT on windows. Do not
+			ask for support or even binaries of giFT on windows!
+		</para>
+		<para>
+			It is also important that you do not make windows binaries of giFT
+			available. giFT/OpenFT is currently in a state which would make it
+			crumble under the influx of the large number of users which a binary
+			release for windows would most likely cause. If we think that
+			giFT/OpenFT can handle a sufficient number of users we will make
+			binaries for windows available.
+		</para>
+		<para>
+			This guide describes how to build giFT on the command line.
+			The Visual Studio IDE is not maintained and most likely won't work.
+		</para>
+		<para>
+			You should create an empty directory in which the build environment
+			will be set up. This directory will be referred to as "/" within
+			this document.
+		</para>
+		<para>
+			It is assumed that you are going to make a debug build. To turn
+			debugging off (not recommended) added RELEASE=1 to
+			<emphasis>all</emphasis> nmake invocations.
+		</para>
+	</sect1>
+	<sect1>
+		<title>General preparation</title>
+		<para>
+			Before you can build giFT at the command line, make sure you have
+			the following environmental variables defined:
+
+			<screen>
+	PATH=C:\Program Files\Microsoft Visual Studio\VC98\Bin:%PATH%</screen>
+
+			Optionally, you use can use the DOS 8.3 name:
+
+			<screen>
+	PATH=C:\PROGRA~1\MICROS~2\VC98\Bin:%PATH%</screen>
+
+			Also define:
+
+			<screen>
+	LIB=C:\Program Files\Microsoft Visual Studio\VC98\Lib:%LIB%
+	INCLUDE=C:\Program Files\Microsoft Visual Studio\VC98\Include:%INCLUDE%</screen>
+
+			In Windows 95/98/ME, add these statements to the
+			<emphasis>end</emphasis> of <filename>C:\AUTOEXEC.BAT.</filename>
+
+			In Windows NT/2000/XP, add these to the <emphasis>end</emphasis>
+			of each environment variable (using
+			<filename>Start/Settings/Control Panel/System/Advanced/Environment Variables/System</filename>).
+		</para>
+	</sect1>
+	<sect1>
+		<title>Getting giFT</title>
+		<para>
+			First you will need to download the latest giFT tarball from
+			<ulink url="http://gift.sourceforge.net/download.php">http://gift.sourceforge.net/download.php</ulink>.
+			Or optionally get it from cvs.
+		</para>
+		<para>
+			Extract giFT to <filename>/giFT</filename> and proceed with installing
+			the third party libraries.
+		</para>
+	</sect1>
+	<sect1>
+		<title>Preparing third party libraries</title>
+		<para>
+			There are a few third party libraries which you will need to
+			build giFT
+		</para>
+		<sect2>
+			<title>ZLib</title>
+			<para>
+				Zlib is used in several places by giFT, OpenFT and Gnutella.
+			</para>
+			<para>
+				Get <ulink url="http://prdownloads.sourceforge.net/libpng/zlib114.zip">http://prdownloads.sourceforge.net/libpng/zlib114.zip</ulink>
+				and extract it to <filename>/zlib</filename>.
+				Copy <filename>/giFT/win32/zlib.mak</filename> to
+				<filename>/zlib</filename> and run:
+
+				<screen>
+	> cd /zlib
+	> nmake /f zlib.mak</screen>
+
+			</para>
+		</sect2>
+		<sect2>
+			<title>Berkeley Database (libdb)</title>
+			<para>
+				OpenFT uses libdb for efficient data storage and access.
+				If you want to function as a SEARCH node (a node that
+				handles searches for other nodes) you'll
+				<emphasis>need</emphasis> libdb. This document assumes you
+				are using version 4.1.x.
+			</para>
+			<para>
+				Get <ulink url="http://www.sleepycat.com/update/snapshot/db-4.1.25.zip">http://www.sleepycat.com/update/snapshot/db-4.1.25.zip</ulink>
+				and extract it to <filename>/libdb</filename>.
+
+				Follow the instructions in /libdb/docs/ref/build_win/intro.html to
+				build both the Release and Debug DLL.
+			</para>
+		</sect2>
+		<sect2>
+			<title>libvorbis</title>
+			<para>
+				Meta data from Ogg Vorbis files is extracted using
+				libvorbis.
+			</para>
+			<para>
+				Get <ulink url="http://www.vorbis.com/files/1.0/windows/OggVorbis-win32sdk-1.0.zip">http://www.vorbis.com/files/1.0/windows/OggVorbis-win32sdk-1.0.zip</ulink>
+				and extract it to <filename>/vorbis</filename>.
+
+				No further steps are required.
+			</para>
+		</sect2>
+	</sect1>
+	<sect1>
+		<title>Building giFT</title>
+		<para>
+			Change to the giFT dir and build giFT using the following commands:
+
+			<screen>
+	> cd /giFT
+	> nmake /f Makefile.msvc ZLIB=1 VORBIS=1 LIBDB=1 win32-dist</screen>
+
+			This will create a directory <filename>/libgift</filename> which contains
+			libraries and headers needed by plugins.
+			It will also create <filename>/win32-dist</filename> to which we will
+			come back later.
+		</para>
+	</sect1>
+	<sect1>
+		<title>Building the plugins</title>
+		<para>
+			In order for giFT to do anything usefull you will need one or more
+			network plugins which giFT uses to connect to different filesharing
+			networks.
+		</para>
+		<sect2>
+			<title>Building OpenFT</title>
+			<para>
+				OpenFT is the primary network used with giFT
+			</para>
+			<para>
+				Download the latest OpenFT tarball from
+				<ulink url="http://gift.sourceforge.net/download.php">http://gift.sourceforge.net/download.php</ulink>.
+				Or optionally get it from cvs.
+			</para>
+			<para>
+				Extract OpenFT to <filename>/OpenFT</filename> and run
+
+				<screen>
+	> cd /OpenFT
+	> nmake /f Makefile.msvc ZLIB=1 LIBDB=1 win32-dist</screen>
+
+				This will build OpenFT and copy relevant files to
+				<filename>/win32-dist</filename>.
+			</para>
+		</sect2>
+		<sect2>
+			<title>Building Gnutella</title>
+			<para>
+				The Gnutella plugin allows giFT to participate in the gnutella network.
+			</para>
+			<para>
+				Download the latest Gnutella tarball from
+				<ulink url="http://gift.sourceforge.net/download.php">http://gift.sourceforge.net/download.php</ulink>.
+				Or optionally get it from cvs.
+			</para>
+			<para>
+				Extract Gnutella to <filename>/Gnutella</filename> and run
+
+				<screen>
+	> cd /Gnutella
+	> nmake /f Makefile.msvc ZLIB=1 win32-dist</screen>
+
+				This will build Gnutella and copy relevant files to
+				<filename>/win32-dist</filename>.
+			</para>
+		</sect2>
+		<sect2>
+			<title>Building giFT-FastTrack</title>
+			<para>
+				giFT-FastTrack is a plugin for connecting to the FastTrack network
+				(Kazaa, imesh, etc.).
+			</para>
+			<para>
+				Download the latest giFT-FastTrack tarball from
+				<ulink url="http://developer.berlios.de/projects/gift-fasttrack">http://developer.berlios.de/projects/gift-fasttrack</ulink>.
+				Or optionally get it from cvs.
+			</para>
+			<para>
+				Extract giFT-FastTrack to <filename>/FastTrack</filename> and run
+
+				<screen>
+	> cd /FastTrack
+	> nmake /f Makefile.msvc win32-dist</screen>
+
+				This will build giFT-FastTrack and copy relevant files to
+				<filename>/win32-dist</filename>.
+			</para>
+		</sect2>
+	</sect1>
+	<sect1>
+		<title>Putting it all together</title>
+		<para>
+			This step will build a self extracting installer for giFT using
+			the files in <filename>/win32-dist</filename>.
+			If you do not build the installer you will have to set up a suitable
+			environment for giFT to run in yourself.
+		</para>
+		<para>
+			Get Nullsoft's Scriptable Install System from
+			<ulink url="http://nsis.sourceforge.net">http://nsis.sourceforge.net</ulink>
+			and install it on your system.
+		</para>
+		<para>
+			Execute the following commands to build the installer:
+
+			<screen>
+	> cd /win32-dist
+	> perl nsisprep.pl
+	> MakeNSIS.exe gift.nsi</screen>
+		</para>
+		<para>
+			Use the resulting package
+			<filename>giFT-<emphasis>x.x.x</emphasis>.exe</filename> to install
+			giFT on your machine.
+		</para>
+	</sect1>
+	<sect1>
+		<title>Miscellaneous</title>
+		<sect2>
+			<title>Logging</title>
+			<para>
+				giFT keeps a logfile
+				<filename>giftd.log</filename> which contains
+				information about both giFT and OpenFT (and any other plugins).
+				This file is created on startup, so don't restart giFT
+				immediately when it crashes, but check the log and report the
+				problem.
+			</para>
+		</sect2>
+		<sect2>
+			<title>More information</title>
+			<para>
+				More information about the giFT project and giFT/OpenFT can be
+				found in
+				<ulink url="http://gift.sourceforge.net/docs.php">the other
+				documentation</ulink> at our
+				<ulink url="http://gift.sourceforge.net">website</ulink>.
+			</para>
+			<para>
+				If you want to learn about the interface protocol (that
+				clients use to connect to giFT) read the
+				<ulink url="http://gift.sourceforge.net/docs.php?document=interface.html">Interface Protocol documentation</ulink>.
+				Please check other client projects first before starting your
+				own.
+			</para>
+			<para>
+				See the
+				<ulink url="http://gift.sourceforge.net/contact.php">contact</ulink>
+				page for more information about the preferable ways to ask for
+				help and/or contact us.
+			</para>
+		</sect2>
+	</sect1>
+</article>

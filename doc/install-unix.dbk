@@ -1,0 +1,436 @@
+<?xml version="1.0"?>
+<!--
+###############################################################################
+##
+## vim: set ts=2 sts=2 ft=xml tw=90 sw=2: -*- html -*-
+##
+## $Id: install-unix.dbk,v 1.8 2003/08/27 12:01:58 eelcol Exp $
+##
+## Module:         UNIX Installation Guide
+## Description:    Instructions for building, configuring, and using giFT on
+##                 most UNIX platforms.
+##
+## Copyright (C) 2001-2003 giFT project (gift.sourceforge.net)
+##
+## This program is free software; you can redistribute it and/or modify it
+## under the terms of the GNU General Public License as published by the
+## Free Software Foundation; either version 2, or (at your option) any
+## later version.
+##
+## This program is distributed in the hope that it will be useful, but
+## WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+## General Public License for more details.
+##
+###############################################################################
+  -->
+<!DOCTYPE article PUBLIC '-//OASIS//DTD DocBook XML V4.1.2//EN'
+  'file:///usr/share/sgml/docbook/dtd/xml/4.1.2/docbookx.dtd'>
+<article>
+	<articleinfo>
+		<title>giFT/OpenFT's Installation Guide</title>
+	  <authorgroup>
+			<author>
+				<firstname>Eelco</firstname>
+				<surname>Lempsink</surname>
+				<contrib>Original version</contrib>
+			</author>
+			<author>
+				<firstname>Daryl</firstname>
+				<surname>Anderman</surname>
+				<contrib>Major revision</contrib>
+			</author>		
+		</authorgroup>		
+		<abstract>
+			<para>
+				A document to guide you through the process of installing
+				(and starting to use) giFT and OpenFT.
+			</para>
+		</abstract>
+	</articleinfo>
+	<sect1>
+		<title>Introduction</title>
+		<para>
+			A small notice to begin with.  If you have read these instructions
+			completely and still need help go to
+			<ulink url="http://gift.sourceforge.net/contact.php">http://gift.sourceforge.net/contact.php</ulink>.
+		</para>
+		<para>
+			These instructions are for installing giFT on a *nix platform.
+			For Mac OS X, please use
+			<ulink url="http://fink.sourceforge.net/">fink</ulink>.  If you
+			wish to install on Windows you are on your own.
+		</para>
+	</sect1>
+	<sect1>
+		<title>Getting giFT/OpenFT</title>
+		<para>
+			First you will need to download the latest giFT tarball from
+			<ulink url="http://gift.sourceforge.net/download.php">http://gift.sourceforge.net/download.php</ulink>.
+			You may also want to download the latest OpenFT plugin while
+			you're at it.
+		</para>
+		<para>
+			Go to the directory you downloaded the tarballs to and type
+			(the $ is used to indicate this is a shell command):
+
+			<screen>
+  $ tar -xzvf gift-<emphasis>x.xx.x</emphasis>.tar.gz</screen>
+
+			Please note that if you have downloaded the bzipped tarball, you
+			will need to use a slightly different command line to extract.
+		</para>
+		<para>
+			This will create a directory
+			<filename class="directory">gift-<emphasis>x.xx.x</emphasis>/</filename>
+			with the giFT source.
+		</para>
+	</sect1>
+	<sect1>
+		<title>Building giFT</title>
+		<sect2>
+			<title>Third party software</title>
+			<para>
+				There are a few third party libraries which giFT/OpenFT can
+				use.  A few are more or less mandatory, all are recommend.
+			</para>
+			<sect3>
+				<title>ZLib</title>
+				<para>
+					OpenFT uses zlib to compress your shares list before
+					sending it to your PARENT nodes.  This will reduces the
+					amount of data sent over the OpenFT network significantly.
+					To enable compression you must have zlib 1.1.[34]
+					installed.  zlib is <emphasis>required</emphasis>.  If you
+					are using Debian, install <filename>zlib1g</filename> and
+					<filename>zlib1g-dev</filename>.  RPM-based distributions
+					should use the <filename>zlib-1.1.4</filename> and
+					<filename>zlib-devel-1.1.4</filename> packages.
+				</para>
+			</sect3>
+			<sect3>
+				<title>libltdl</title>
+				<para>
+					giFT uses libltdl to load the OpenFT plugin (and any other
+					plugins you install).  Libltdl is currently required.
+					This may be installed along with libtool on OS X and other
+					BSD-like platforms, or it may be in libltdl-dev.
+				</para>
+				<para>
+					You can get it from
+					<ulink url="http://www.gnu.org/software/libtool/libtool.html">www.gnu.org</ulink>.
+				</para>
+				<para>
+					TODO: add package names and a better description.
+				</para>
+			</sect3>
+			<sect3>
+				<title>Berkeley Database (libdb)</title>
+				<para>
+					OpenFT uses libdb for efficient data storage and access.
+					If you want to function as a SEARCH node (a node that
+					handles searches for other nodes) you'll
+					<emphasis>need</emphasis> libdb.  A version &gt;= 3.1.x is
+					preferred.  Version 4.1.x is used by the developers for
+					most of the testing.
+				</para>
+				<para>
+					On Debian install <filename>libdb3-dev</filename> or
+					<filename>libdb4.1-dev</filename> will get you the
+					necessary files.  RPM based distribution need the
+					<filename>libdb3.3</filename> and
+					<filename>libdb3.3-devel</filename> or the
+					<filename>libdb4.1</filename> and
+					<filename>libdb4.1-devel</filename> packages.  The source
+					is available at
+					<ulink url="http://www.sleepycat.com">SleepyCat</ulink>.
+				</para>
+			</sect3>
+			<sect3>
+				<title>libmagic</title>
+				<para>
+					giFT uses libmagic to guess file types. On Debian install
+					<filename>libmagic1</filename> and
+					<filename>libmagic-dev</filename>.  RPM-based
+					distributions can use <filename>libmagic</filename> and
+					<filename>libmagic-devel</filename>.
+				</para>
+			</sect3>
+			<sect3>
+				<title>libvorbis</title>
+				<para>
+					Meta data from Ogg Vorbis files is extracted using
+					libvorbis. On Debian install
+					<filename>libvorbis</filename> and
+					<filename>libvorbis-dev</filename>.  RPM-based
+					distributions can use <filename>libvorbis</filename> and
+					<filename>libvorbis-devel</filename>.
+				</para>
+			</sect3>
+			<sect3>
+				<title>ImageMagick</title>
+				<para>
+					For image meta data ImageMagick is used.  On Debian
+					install <filename>libmagick</filename> and
+					<filename>libmagick-dev</filename>.  RPM-based
+					distributions can use <filename>libMagick5</filename> and
+					<filename>libMagick5-devel</filename>.
+				</para>
+			</sect3>
+		</sect2>
+		<sect2>
+			<title>Running ./configure</title>
+			<para>
+				This step is pretty straight forward.  Just do:
+
+				<screen>
+  $ cd gift-<emphasis>x.xx.x</emphasis>/
+  $ ./configure</screen>
+
+				At the end of the run you'll be presented a small list with
+				information about the extensions and meta data tools that
+				will be used to build giFT.  Check that list to see if all the
+				stuff you wish to include is listed.  If not, install it (and
+				the related devel package!) or check if you've installed the
+				right version.  Don't forget to remove
+				<filename>config.cache</filename> before retrying
+				<command>./configure</command>.
+			</para>
+			<para>
+				If you need more help, try looking at the information
+				<command>./configure --help</command> gives you.
+			</para>
+		</sect2>
+		<sect2>
+			<title>Making and installing</title>
+			<para>
+				This is even easier then the previous action.  Type:
+
+				<screen>
+  $ make</screen>
+
+				And press enter.  If you get fatal errors during make, read
+				the instructions about configuring again, and check your
+				system setup before complaining to us.  Some of our configure
+				checks are incomplete and will appear to have found packages
+				which are not fully installed (devel packages again).
+			</para>
+			<para>
+				If all went well, you can now install giFT with:
+
+				<screen>
+  $ su -c 'make install'</screen>
+
+				Now that giFT is installed you will need to get at least one
+				plugin (ie OpenFT) and a frontend before you can actually use
+				it for anything.
+			</para>
+		</sect2>
+		<sect2>
+			<title>Building OpenFT</title>
+			<para>
+				After you have installed giFT you will need to build and
+				install OpenFT.  This is done as above:
+			</para>
+			<para>
+				Download the latest OpenFT tarball from
+				<ulink url="http://gift.sourceforge.net/download.php">http://gift.sourceforge.net/download.php</ulink>.
+				If you have already done this skip to the next step.
+			</para>
+			<para>
+				Go to the directory you downloaded the tarballs to and type:
+
+				<screen>
+  $ tar -xzvf gift-openft-<emphasis>x.x.x.x</emphasis>.tar.gz</screen>
+
+				Again note that this command line will be slightly different
+				for the bzipped tarball.
+			</para>
+			<para>
+				Then run:
+
+				<screen>
+  $ gift-openft-<emphasis>x.x.x.x</emphasis>/
+  $ ./configure</screen>
+			</para>
+			<para>
+				Finally:
+
+				<screen>
+  $ make</screen>
+
+				and
+
+				<screen>
+  $ su -c 'make install'</screen>
+			</para>
+			<para>
+				Now that you've installed OpenFT plugin, you will need to
+				configure giFT and OpenFT.  Read on MacDuff!
+			</para>
+		</sect2>
+	</sect1>
+	<sect1>
+		<title>Configuring giFT/OpenFT</title>
+		<sect2>
+			<title>gift-setup</title>
+			<para>
+				After installing giFT and OpenFT you'll need to set them up.
+				Be sure that you completely install any plugins you wish to
+				use before this step.  If you decide that you later wish to
+				add a new plugin, you will need to re-run gift-setup after
+				installation.  Invocation of the setup tool is something like
+				this:
+
+				<screen>
+  $ gift-setup</screen>
+
+				Note that giFT and OpenFT <emphasis>will not work</emphasis>
+				with the default setup, so make sure you read and understand
+				all questions before answering or just pressing enter.  To
+				reconfigure giFT and OpenFT later, just run
+				<command>gift-setup</command> again.
+			</para>
+		</sect2>
+		<sect2>
+			<title>Configuring by hand</title>
+			<para>
+				You may choose to configure giFT/OpenFT by hand (if you don't
+				want to run through all options again, for example.  The
+				config file for giFT is
+				<filename>~/.giFT/giftd.conf</filename>.  Plugin configuration
+				can be found in
+				<filename>~/.giFT/PLUGIN/PLUGIN.conf</filename>.
+			</para>
+			<para>
+				Both files should include enough comments to understand the
+				options.
+			</para>
+		</sect2>
+	</sect1>
+	<sect1>
+		<title>Running and using giFT/OpenFT</title>
+		<sect2>
+			<title>Running giFT</title>
+			<para>
+				Normal invocation of giftd is as follows:
+
+				<screen>
+  $ giftd
+or
+  $ giftd -d</screen>
+
+				This will start the daemon and load all protocols that are
+				installed and referenced in
+				<filename>~/.giFT/giftd.conf</filename>.  The -d switch will
+				cause giFT to fork to the background, as a daemon would be
+				expected to do.  This switch should only be used after you
+				are certain that giftd is able to start successfully.
+			</para>
+			<para>
+				Once giftd has been started, it will silence output to the
+				terminal and "just sit there", waiting for user input over
+				the interface protocol (this is where you need a GUI or
+				frontend to attach to it).  If you really want to know what
+				it's doing (if you think it doesn't work for example), invoke
+				with <command>giftd -v</command> to print debugging info to
+				stdout or read <filename>~/.giFT/giftd.log</filename>.  Both
+				will have the same output.
+			</para>
+			<para>
+				When you run giFT for the first time, it will most likely hog
+				your CPU and drive your harddrive crazy.  This is because
+				giFT will need to calculate the md5sum (this process is
+				called 'hashing') of all your shared files to create a
+				database.  The next time you run giFT only files that were
+				added or changed will be hashed.
+			</para>
+			<para>
+				You can gracefully kill giFT by either delivering SIGINT or
+				SIGTERM to giftd (<command>killall -TERM giftd</command> or
+				<command>kill &lt;PID&gt;</command>), or by sending the
+				"quit;" interface command, which usually can be done with
+				<command>echo "QUIT;" | nc &lt;gift-host&gt; &lt;gift-port&gt;</command>,
+				if you have netcat (nc).
+			</para>
+		</sect2>
+		<sect2>
+			<title>Getting a client</title>
+			<para>
+				Of course, at this point you may want to actually
+				<emphasis>use</emphasis> giFT.  Search OpenFT, download files,
+				stuff like that.  For this you'll need to download a client.
+				A list with 'good' clients is available at our
+				<ulink url="http://gift.sourceforge.net/clients.php">website</ulink>.
+			</para>
+			<para>
+				Alternativly you can use Google's or SourceForge's search to
+				find other clients.
+			</para>
+		</sect2>
+	</sect1>
+	<sect1>
+		<title>Miscellaneous</title>
+		<sect2>
+			<title>Logging</title>
+			<para>
+				giFT/OpenFT keeps a logfile
+				<filename>~/.giFT/giftd.log</filename> which contains
+				information about both giFT and OpenFT (and any other plugins).
+				This file is created on startup, so don't restart giFT
+				immediately when it crashes, but check the log and report the
+				problem.
+			</para>
+		</sect2>
+		<sect2>
+			<title>The nodes file</title>
+			<para>
+				Ah yes, the ever popular <filename>nodes</filename> file...
+				Since many questions in our IRC channel were asked related to
+				this file, it gets a special section here.
+			</para>
+			<para>
+				Upon startup OpenFT reads the nodes file.  Nodes are sorted by
+				last-seen packet, and OpenFT attempts up to 15 outgoing
+				connections every 2 minutes.  When the network devides,
+				because of a newer protocol, your nodes file will be filled
+				with mostly old nodes.  This makes it difficult to find a
+				connection to an up-to-date node.
+			</para>
+			<para>
+				Upon (every) install a global nodes file is installed (most
+				likely at
+				<filename>/usr/local/share/giFT/OpenFT/nodes</filename>).
+				When you have problems connecting (most of the time you just
+				need to be a little more patient), try removing your local
+				nodes file (<filename>~/.giFT/OpenFT/nodes</filename>), and
+				giFT will automagically read the global nodes file, and make
+				a new local nodes file.  Note that you don't have to stop giFT
+				while doing this.
+			</para>
+		</sect2>
+		<sect2>
+			<title>More information</title>
+			<para>
+				More information about the giFT project and giFT/OpenFT can be
+				found in
+				<ulink url="http://gift.sourceforge.net/docs.php">the other
+				documentation</ulink> at our
+				<ulink url="http://gift.sourceforge.net">website</ulink>.
+			</para>
+			<para>
+				If you want to learn about the interface protocol (that
+				clients use to connect to giFT) read the
+				<ulink url="http://gift.sourceforge.net/docs.php?document=interface.html">Interface Protocol documentation</ulink>.
+				Please check other client projects first before starting your
+				own.
+			</para>
+			<para>
+				See the
+				<ulink url="http://gift.sourceforge.net/contact.php">contact</ulink>
+				page for more information about the preferable ways to ask for
+				help and/or contact us.
+			</para>
+		</sect2>
+	</sect1>
+</article>

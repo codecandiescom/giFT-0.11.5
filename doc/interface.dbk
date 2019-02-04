@@ -1,0 +1,1092 @@
+<?xml version="1.0"?>
+<!--
+###############################################################################
+##
+## vim: set sts=2 ft=xml tw=90 sw=2: -*- html -*-
+##
+## $Id: interface.dbk,v 1.28 2003/08/27 10:43:53 eelcol Exp $
+##
+## Module:         Interface Protocol
+## Description:    A description of the interface protocol that giFT uses to
+##                 communicate with attached clients (GUIs).
+##
+## This program is free software; you can redistribute it and/or modify it
+## under the terms of the GNU General Public License as published by the
+## Free Software Foundation; either version 2, or (at your option) any
+## later version.
+##
+## This program is distributed in the hope that it will be useful, but
+## WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+## General Public License for more details.
+##
+###############################################################################
+  -->
+<!DOCTYPE article PUBLIC '-//OASIS//DTD DocBook XML V4.2//EN'
+  'file:///usr/share/sgml/docbook/dtd/xml/4.2/docbookx.dtd'>
+<article>
+<articleinfo>
+  <title>giFT's Interface Protocol</title>
+  <authorgroup>
+    <author><firstname>Josh</firstname><surname>Guilfoyle</surname></author>
+    <author><firstname>Eelco</firstname><surname>Lempsink</surname></author>
+  </authorgroup>
+  <abstract>
+    <para>
+      This document describes giFT's Interface Protocol.  This protocol is used by clients to communicate with
+      giFT.  Below you'll find all pointers you need to create a client using this protocol.  Note that you
+      can also use libgiFT to make a client.  (You'd still have to know the protocol commands though, see
+      <filename>lib/example.c</filename> for a simple example.)
+    </para>
+  </abstract>
+</articleinfo>
+<sect1 id="sect_syntax">
+  <title>SYNTAX</title>
+  <sect2>
+    <title>Commands</title>
+    <para>
+      The interface protocol works by sending specific commands over a
+      socket.  The basic syntax of both queries and responses is the same.
+      A complete command block ends with a <literal>;</literal>:
+      <synopsis>  <command>COMMAND</command>;</synopsis>
+    </para>
+    <para>
+      Some commands require an id.  You need to send this as an argument
+      (between parenthesis, no quotes) to the command:
+      <synopsis>  <command>COMMAND</command>(argument);</synopsis>.
+      See <xref linkend="session-ids" label="session-ide.title"/> for information about using ids.
+    </para>
+  </sect2>
+  <sect2>
+    <title>Keys</title>
+    <para>
+      Most commands have a set of keys.  A key often has a value, in the
+      form of an argument, but this is not required.
+      <synopsis>
+  <command>COMMAND</command>
+     key1(argument)
+     key2
+  ;</synopsis>
+      Whitespace (outside arguments) isn't important, so that command could have
+      also been written as:
+      <synopsis>  <command>COMMAND</command> key1 (argument) key2;</synopsis>
+      Order doesn't matter either, so even
+      <synopsis>  <command>COMMAND</command> key2 key1 (argument);</synopsis>
+      is syntactically correct. More information about whitespace and order
+      <link linkend="ws-and-order">later</link>.
+    </para>
+  </sect2>
+  <sect2>
+    <title>Subcommands</title>
+    <para>
+      Besides keys (or you could say "as a special key") there are
+      subcommands.  A subcommand has a set of keys (with arguments) between
+      braces ({ and }) as a argument.  The keys of a subcommand have the same
+      syntax as keys of a normal command. A subcommand can have a normal
+      argument itself too.
+      <synopsis>
+  <command>COMMAND</command>
+     key1
+     <command>SUBCOMMAND</command> (argument) {
+        subkey1
+        subkey2(argument)
+     }
+  ;</synopsis>
+    </para>
+    <para>
+      A subcommand can even have a subcommand itself (that would make it a
+      subsubcommand). Information about how you should parse that is in <xref
+      linkend="tree"/>.
+    </para>
+  </sect2>
+  <sect2>
+    <title>Definitions</title>
+    <para>
+      As an overview, here are the definitions of all used objects (bottom-up).
+      The <literal>*</literal>, <literal>+</literal> and <literal>?</literal>
+      are used a special chars, and have the same meaning as they would have in
+      a regular expression
+      <footnote id="regexpchars">
+        <para>
+          <literal>*</literal>, <literal>+</literal> and <literal>?</literal>
+          mean "zero or more times", "one or more times", "zero times or one
+          time" respectively.
+        </para>
+      </footnote>
+      .
+      Keep in mind, (sub)commands and keys are case insensitive, and order and
+      whitespace don't matter (except inside an argument).
+      Of course, you must use the command, subcommand or key before its
+      argument.  The only time you'll actually need whitespace is
+      when the command is directly followed by a key.
+    </para>
+    <sect3>
+      <title>Key</title>
+      <synopsis role="oneliner">
+  key (argument)?</synopsis>
+    </sect3>
+    <sect3>
+      <title>Subcommand</title>
+      <synopsis role="oneliner">
+  <command>SUBCOMMAND</command> (argument)? { key+ SUBCOMMAND* }</synopsis>
+    </sect3>
+    <sect3>
+      <title>Command</title>
+      <synopsis role="oneliner">
+  <command>COMMAND</command> (argument)? key* SUBCOMMAND* ;</synopsis>
+    </sect3>
+    <para>
+      <literal>key</literal>, <literal>SUBCOMMAND</literal> and
+      <literal>COMMAND</literal> are replaceable by any string matching
+      <literal>\w[\d\w_]*</literal>
+      <footnote>
+        <para>
+          This means that it must start with a letter (case doesn't matter),
+          which can be followed by more letters, numbers and an underscore
+          (<literal>_</literal>).
+        </para>
+      </footnote>
+      .
+      An <literal>argument</literal> can contain any character, but
+      <literal>(</literal>, <literal>)</literal>, <literal>{</literal>,
+      <literal>}</literal>, <literal>;</literal> and <literal>\</literal> must
+      be <link linkend="escaping">escaped</link>.
+    </para>
+  </sect2>
+  <sect2 id="parsing">
+    <title>Things you should know when parsing</title>
+    <sect3 id="ws-and-order">
+      <title>Whitespace and order</title>
+      <para>
+        Whitespace outside arguments is not important. All whitespace is treated the same, namely
+        as a single space ('<literal> </literal>'). You can consider whitespace as a 'token-seperator'.
+      </para>
+      <para>
+        Order isn't important either, it doesn't really matter in what the order
+        is of the keys, and, less trivial, you can send the argument and
+        the set of keys (for subcommands) in any order.
+      </para>
+      <para>
+        Time for an example. This:
+        <synopsis>
+  <command>SEARCH</command>(4)
+     query (foo  bar)
+     realm (audio)
+     <command>META</command> {
+           bitrate(>=192)foo(bla)
+     }
+       (c owns me)
+     bla      ( blum! )     ;</synopsis>
+        Is actually just the same as this:
+        <synopsis>
+  <command>SEARCH</command> (4)
+     query (foo  bar)
+     realm (audio)
+     <command>META</command> (c owns me) {
+         bitrate (>=192)
+         foo (bla)
+     }
+     bla ( blum! )
+  ;</synopsis>
+      </para>
+    </sect3>
+    <sect3 id="escaping">
+      <title>Escaping</title>
+      <para>
+        By this time, you should have asked yourself "But what if I, for example,
+        want to include a ')' in an argument?", but even if you didn't, here's
+        what:
+      </para>
+      <para>
+        Each argument in the protocol must be encoded by escaping
+        <literal>(</literal>, <literal>)</literal>, <literal>{</literal>,
+        <literal>}</literal>, <literal>;</literal> and <literal>\</literal> to
+        ensure that only cleanly parsable text is present. Escaping in this
+        context means that you must put <literal>\</literal> directly for the
+        special character. An example:
+        <synopsis>
+  <command>COMMAND</command>
+     key(arg\(ument\))
+     <command>SUBCOMMAND</command> (/\{dude\}\\)
+        subkey(\;\;\;)
+  ;</synopsis>
+        Note that you'll have to escape every the characters in every context, so
+        you'll have to escape a <literal>}</literal> even if it's part of a
+        argument.
+      </para>
+    </sect3>
+    <sect3 id="tree">
+      <title>Hug a tree</title>
+      <para>
+        As you've seen, the protocol is designed in such a way that requires
+        parsers to organize (recursively) a list of keys and their values.  A key
+        value may include a list of other keys, therefore constructing a tree-like
+        parsing method is ideal.
+      </para>
+    </sect3>
+  </sect2>
+</sect1>
+<sect1 id="sect_protocol">
+  <title>PROTOCOL</title>
+  <sect2>
+    <title>Notations</title>
+    <itemizedlist>
+      <listitem>
+        <para>
+          <literal><command>(SUB)COMMAND</command></literal>.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          <literal>*</literal>, <literal>+</literal>, <literal>?</literal>. 'meta-characters'<footnoteref
+          linkend="regexpchars"/>, don't include these.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          <literal><replaceable>replaceable text</replaceable></literal>
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          <literal><optional>optional subcommands/arguments/attributes</optional></literal>
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          <synopsis role="oneliner" label="client">Data sent by the client</synopsis>
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          <synopsis role="oneliner" label="server">Data sent by the server</synopsis>
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          <synopsis role="oneliner">Data that can be sent by both the client and the server</synopsis>
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          <synopsis role="oneliner"><textobject>
+            <variablelist>
+              <varlistentry>
+                <term>variable</term>
+                <listitem><para>explanation or a link to the first explanation</para></listitem>
+              </varlistentry>
+            </variablelist>
+          </textobject></synopsis>
+        </para>
+      </listitem>
+    </itemizedlist>
+  </sect2>
+  <sect2 id="attaching">
+    <title>Attaching Connections</title>
+    <sect3 id="session-ids">
+      <title id="session-ids.title">Session-Specific Event Identifiers</title>
+      <para>
+        Event identifiers are requested by the client (with a few exceptions) and will be considered
+        session-specific.  The response of the server will use the same id as the client requested.  This
+        completely eliminates the need to wait on the servers event response, and consequently the command
+        completely.  All session-specific id's must be unique (to that session) and must not overlap.  This
+        means you'll have to keep track of all used ids, the ones specified by your client, and the ones giFT
+        uses,
+      </para>
+    </sect3>
+    <sect3 id="attach">
+      <title>Attach</title>
+      <para>
+        In order to take advantage of the event identifiers (and therefore
+        multiple events per socket), giFT clients are expected to register this
+        as an active single-socket session with the daemon.  This is done via the
+        ATTACH request, described below:
+        <synopsis label="client">
+  <command>ATTACH</command>
+     <optional>client(<replaceable>client</replaceable>)</optional>
+     <optional>version(<replaceable>client version</replaceable>)</optional>
+     <optional>profile(<replaceable>profile</replaceable>)</optional>
+  ;
+          <textobject>
+            <variablelist>
+              <varlistentry id="client">
+                <term>client</term>
+                <listitem>
+                  <para>
+                    The name of your client. This can be used to gather statistics
+                    on the use of different clients, but that's not (yet) implemented.
+                  </para>
+                </listitem>
+              </varlistentry>
+              <varlistentry id="client_version">
+                <term>client version</term>
+                <listitem>
+                  <para>
+                    Your client's version.
+                  </para>
+                </listitem>
+              </varlistentry>
+              <varlistentry id="profile">
+                <term>profile</term>
+                <listitem>
+                  <para>
+                    giFT specific configuration profile (username).
+                  </para>
+                </listitem>
+              </varlistentry>
+            </variablelist>
+          </textobject></synopsis>
+        Client and version are expected to be your formal client name and version
+        identifier.  Upon seeing this request, the server will reply with:
+        <synopsis label="server">
+  <command>ATTACH</command>
+     server(<replaceable>server</replaceable>)
+     version(<replaceable>server version</replaceable>)
+  ;
+          <textobject>
+            <variablelist>
+              <varlistentry id="server">
+                <term>server</term>
+                <listitem>
+                  <para>
+                    The name of the server, this will be 'giFT'.
+                  </para>
+                </listitem>
+              </varlistentry>
+              <varlistentry id="server_version">
+                <term>server version</term>
+                <listitem>
+                  <para>
+                    giFT's version. This can be important if certain parts of this
+                    protocol change, and you want your client to support it.
+                  </para>
+                </listitem>
+              </varlistentry>
+            </variablelist>
+          </textobject></synopsis>
+      </para>
+    </sect3>
+    <sect3 id="detach">
+      <title>Detach</title>
+      <para>
+        You may also request an explicit detach from the session which will
+        result in the connections closure from the server.  Please note that this
+        request is ignored if the session is not attached.  This request is
+        simply:
+        <synopsis label="client">
+  <command>DETACH</command>;</synopsis>
+      </para>
+        Of course, the server, and with it all uploads and downloads, will keep
+        running.
+    </sect3>
+  </sect2>
+  <sect2>
+    <title>Finding files</title>
+    <sect3>
+      <title>Search</title>
+      <para>
+          The most basic way of finding files, is just a plain search.  This is done by using the
+          <command>SEARCH</command> (as you already guessed).  Valid options for a search are as follows:
+          <synopsis label="client">
+  <command>SEARCH</command> (<optional><replaceable>session-id</replaceable></optional>)
+     query (<replaceable>tokens</replaceable>)
+     <optional>exclude (<replaceable>tokens</replaceable>)</optional>
+     <optional>realm (<replaceable>realm</replaceable>)</optional>
+     <optional><command>META</command> {
+        <replaceable>key_name</replaceable> (<replaceable>value</replaceable>)
+     }
+    </optional>
+  ;
+          <textobject>
+            <variablelist>
+              <varlistentry id="session-id">
+                <term>session-id</term>
+                <listitem>
+                  <para>
+                    The (client)session specific id. (See <xref linkend="session-ids"/>)
+                  </para>
+                </listitem>
+              </varlistentry>
+              <varlistentry id="tokens">
+                <term>tokens</term>
+                <listitem>
+                  <para>
+                    Search (or exclude) tokens. Of course, when the protocol you're searching doesn't
+                    do tokenized searches, it will be regarded as one token.
+                  </para>
+                </listitem>
+              </varlistentry>
+              <varlistentry id="realm">
+                <term>realm</term>
+                <listitem>
+                  <para>
+                    The realm to search. This can be <literal>everything</literal>, <literal>audio</literal>,
+                    <literal>video</literal>, <literal>images</literal>, <literal>text documents</literal>,
+                    <literal>software</literal>.
+                  </para>
+                </listitem>
+              </varlistentry>
+            </variablelist>
+          </textobject></synopsis>
+      </para>
+    </sect3>
+    <sect3>
+      <title>Browse</title>
+      <para>
+        The <command>BROWSE</command> command carries the same options and basic structure as the
+        <command>SEARCH</command> command.  The server may safely treat both searches and browses identically
+        except when presenting the request to the protocol, which should assume these operations are quite
+        different.  The data received from the querying requests is identical in form.
+      </para>
+      <para>
+        The common use of <command>BROWSE</command> is to specify a protocol specific identifier for a user as
+        the <literal>query</literal>.  As with <command>SEARCH</command>, you can limit the request by using
+        keys as <literal>realm</literal>, for example.
+      </para>
+    </sect3>
+    <sect3>
+      <title>Locate</title>
+      <para>
+        <command>LOCATE</command> also follows the same basic structure as the <command>SEARCH</command>
+        command. The main difference is its options. <command>LOCATE</command> only specifies
+        <literal>query</literal>.
+      </para>
+      <para>
+        The purpose of <command>LOCATE</command> is to find different sources for the same file. Use a file
+        hash as its <literal>query</literal>.
+      </para>
+    </sect3>
+    <sect3>
+      <title>Results</title>
+      <para>
+        The server replies to <command>SEARCH</command>, <command>BROWSE</command> and
+        <command>LOCATE</command> with the following:
+        <synopsis label="server">
+  <command>ITEM</command> (<replaceable>session-id</replaceable>)
+     user (<replaceable>username</replaceable>)
+     node (<replaceable>server</replaceable>)
+     <optional>availability (<replaceable>availability</replaceable>)</optional>
+     size (<replaceable>filesize</replaceable>)
+     url (<replaceable>protocol specific url</replaceable>)
+     file (<replaceable>path and filename</replaceable>)
+     <optional>mime (<replaceable>mime-type</replaceable>)</optional>
+     <optional>hash (<replaceable>hash</replaceable>)</optional>
+     <optional><command>META</command> {
+       <replaceable>name</replaceable> (<replaceable>value</replaceable>)
+     }</optional>
+  ;
+          <textobject>
+            <variablelist>
+              <varlistentry>
+                <term>session-id</term>
+                <listitem>
+                  <para>
+                    See <xref linkend="session-id"/> and <xref linkend="session-ids"/>. This is the same id as
+                    you specified for the <command>SEARCH</command>;.
+                  </para>
+                </listitem>
+              </varlistentry>
+              <varlistentry id="username">
+                <term>username</term>
+                <listitem>
+                  <para>
+                    Specific user you're downloading from. For protocol that don't use
+                    username's this will most likely be the ip of the host.
+                  </para>
+                </listitem>
+              </varlistentry>
+              <varlistentry id="node">
+                <term>server</term>
+                <listitem>
+                  <para>
+                    The 'server' this result is found on. For centralized networks this is the server,
+                    for semi-centralized networks the node the search result came from and for
+                    decentralized networks the exact 'peer'.
+                  </para>
+                </listitem>
+              </varlistentry>
+              <varlistentry id="availability">
+                <term>availability</term>
+                <listitem>
+                  <para>
+                    The number of open 'slots' on the remote host.  If supported by the network, > 0 means you
+		    can begin downloading immediately.
+                  </para>
+                </listitem>
+              </varlistentry>
+              <varlistentry id="filesize">
+                <term>filesize</term>
+                <listitem>
+                  <para>
+                    The size of the file in bytes. Very useful for lots of things ;-)
+                  </para>
+                </listitem>
+              </varlistentry>
+              <varlistentry id="url">
+                <term>protocol specific url</term>
+                <listitem>
+                  <para>
+                    An URL that point to a file in a format specific for the protocol of
+                    the network it's on.
+                  </para>
+                </listitem>
+              </varlistentry>
+              <varlistentry id="itemfile">
+                <term>path and filename</term>
+                <listitem>
+                  <para>
+		    The name of the file (including path, if available), as it is on the remote host.  Use this to extract the
+		    filename to save to file to from.
+                  </para>
+                </listitem>
+              </varlistentry>
+              <varlistentry id="mime">
+                <term>mime-type</term>
+                <listitem>
+                  <para>
+                    The mime-type of the file. Only returned if the protocol supports it, of course.
+                  </para>
+                </listitem>
+              </varlistentry>
+              <varlistentry id="hash">
+                <term>hash</term>
+                <listitem>
+                  <para>
+                    The hash of the file. This can be used to find exactly similar files so that
+                    multiple sources can be used for a download. (Again, if supported by the
+                    protocol).  Use this value for 'grouping' files.
+                  </para>
+                </listitem>
+              </varlistentry>
+            </variablelist>
+          </textobject></synopsis>
+        When giFT has returned all search results, an empty <command>ITEM</command> will be sent:
+        <synopsis label="server" role="oneliner">  <command>ITEM</command>(<replaceable>session-id</replaceable>);</synopsis>
+        To cancel a search manually use any of the searching commands with a 'stop' or 'cancel' action, for example:
+        <synopsis label="client" role="oneliner">  <command>SEARCH</command>(<replaceable>session-id</replaceable>) action(cancel);</synopsis>
+      </para>
+    </sect3>
+    <sect3>
+      <title>Meta data</title>
+      <para>
+        The <literal>META</literal> subcommand will contain a set of keys that
+        are applicable for this type of file (if known). Those keys are not
+        hardcoded, so you'll have to find a creative way of parsing those.
+        You could for example hardcode a few keys certain mime categories such
+        as 'artist' and 'title' for <literal>audio/*</literal>, and match meta
+        keys that contain those values. Just an idea.
+      </para>
+    </sect3>
+  </sect2>
+  <sect2 id="transfers">
+    <title>Transferring files</title>
+    <sect3>
+      <title>New transfers</title>
+      <para>
+        When initiating transfers you must send all sources that are to be used in the form described below.
+        You should note that a download will be instantiated when the first source is seen.  Protocols which
+        do not support hashes will always create a new transfer when an <command>ADDSOURCE</command> command
+        is given.
+        <synopsis label="client">
+  <command>ADDSOURCE</command>
+     user (<replaceable>username</replaceable>)
+     <optional>hash (<replaceable>hash</replaceable>)</optional>
+     size (<replaceable>filesize</replaceable>)
+     url (<replaceable>url</replaceable>)
+     <optional>save (<replaceable>save</replaceable>)</optional>
+  ;
+          <textobject>
+            <variablelist>
+              <varlistentry>
+                <term>username</term>
+                <listitem>
+                  <para>
+                    See <xref linkend="username"/>.
+                  </para>
+                </listitem>
+              </varlistentry>
+              <varlistentry>
+                <term>hash</term>
+                <listitem>
+                  <para>
+                    See <xref linkend="hash"/>.
+                  </para>
+                </listitem>
+              </varlistentry>
+              <varlistentry>
+                <term>filesize</term>
+                <listitem>
+                  <para>
+                    See <xref linkend="filesize"/>.
+                  </para>
+                </listitem>
+              </varlistentry>
+              <varlistentry>
+                <term>url</term>
+                <listitem>
+                  <para>
+                    See <xref linkend="url"/>.
+                  </para>
+                </listitem>
+              </varlistentry>
+              <varlistentry id="save">
+                <term>save</term>
+                <listitem>
+                  <para>
+                    The location to save the file too. Do not include a path, it'll be
+                    put in the completed directory.
+                  </para>
+                </listitem>
+              </varlistentry>
+            </variablelist>
+          </textobject></synopsis>
+      </para>
+      <para>
+        The protocol uses one generic format for new transfers,
+        <command>ADDdir</command>, where
+        <command>dir</command> is the direction of the transfer, namely <command>DOWNLOAD</command> or
+        <command>UPLOAD</command>.  On <command>ATTACH;</command>, the
+        <command>ADDdir</command>s for all
+        current transfers will be dumped.
+        <synopsis label="server" id="trans_add">
+  <command>ADDdir</command> (<replaceable>session-id</replaceable>)
+     <optional>hash (<replaceable>hash</replaceable>)</optional>
+     state (<replaceable>state</replaceable>)
+     transmit (<replaceable>transmited</replaceable>)
+     size (<replaceable>filesize</replaceable>)
+     file (<replaceable>save</replaceable>)
+     <optional>shared (<replaceable>shared</replaceable>)</optional>
+     <command>SOURCE</command>* {
+        user (<replaceable>username</replaceable>)
+        url (<replaceable>url</replaceable>)
+	statusgrl (<replaceable>status</replaceable>
+        status (<replaceable>protocol status</replaceable>)
+        start (<replaceable>chunk start</replaceable>)
+        transmit (<replaceable>chunk transmit</replaceable>)
+        total (<replaceable>chunk total</replaceable>)
+     }
+  ;
+          <textobject>
+            <variablelist>
+              <varlistentry>
+                <term>session-id</term>
+                <listitem>
+                  <para>
+                    See <xref linkend="session-id"/> and <xref linkend="session-ids"/>. This id is specified
+                    by the server and can be used to 'track' a download.
+                  </para>
+                </listitem>
+              </varlistentry>
+              <varlistentry>
+                <term>hash</term>
+                <listitem>
+                  <para>
+                    See <xref linkend="hash"/>.
+                  </para>
+                </listitem>
+              </varlistentry>
+              <varlistentry id="state">
+                <term>state</term>
+                <listitem>
+                  <para>
+                    <literal>Active</literal>, <literal>Paused</literal> or <literal>Completed</literal>. See
+                    <xref linkend="pausing"/> for more information about pausing transfers.
+                  </para>
+                </listitem>
+              </varlistentry>
+              <varlistentry id="transmit">
+                <term>transmit</term>
+                <listitem>
+                  <para>
+                    Number of bytes transmitted.
+                  </para>
+                </listitem>
+              </varlistentry>
+              <varlistentry>
+                <term>filesize</term>
+                <listitem>
+                  <para>
+                    See <xref linkend="filesize"/>.
+                  </para>
+                </listitem>
+              </varlistentry>
+              <varlistentry id="file">
+                <term>file</term>
+                <listitem>
+                  <para>
+                    The file being transfered, only the filename, no path.
+                  </para>
+                </listitem>
+              </varlistentry>
+              <varlistentry id="shared">
+                <term>shared</term>
+                <listitem>
+                  <para>
+                    Boolean value (<literal>0</literal>|<literal>1</literal>) indicating whether or not the
+                    file is explicitly shared. Only for <literal>UPLOAD</literal>s.
+                  </para>
+                </listitem>
+              </varlistentry>
+              <varlistentry>
+              <term>username</term>
+                <listitem>
+                  <para>
+                    See <xref linkend="username"/>.
+                  </para>
+                </listitem>
+              </varlistentry>
+              <varlistentry>
+                <term>url</term>
+                <listitem>
+                  <para>
+                    See <xref linkend="url"/>.
+                  </para>
+                </listitem>
+              </varlistentry>
+              <varlistentry id="statusgrl">
+                <term>statusgrl</term>
+                <listitem>
+                  <para>
+                    The status of the chunk. Can be one of the following: <literal>Active</literal>,
+                    <literal>Waiting</literal>, <literal>Paused</literal>, <literal>Queued</literal>,
+                    <literal>Queued (Remotely)</literal>, <literal>Queued (<replaceable>queue
+                    position</replaceable>)</literal>, <literal>Complete</literal>, <literal>Cancelled
+                    (Remotely)</literal>, <literal>Timed out</literal>. The UI should only calculate the
+                    average transfer speed if <literal>status</literal> is <literal>Active</literal>.
+                  </para>
+                </listitem>
+              </varlistentry>
+              <varlistentry id="status">
+                <term>status</term>
+                <listitem>
+                  <para>
+                    The status of the chunk as returned by the protocol.  It's value thus completely depends
+		    on the protocol.
+                  </para>
+                </listitem>
+              </varlistentry>
+              <varlistentry id="start">
+                <term>start</term>
+                <listitem>
+                  <para>
+                    If the source is a chunk of the file, start contains the bytelocation this chunk starts.
+                  </para>
+                </listitem>
+              </varlistentry>
+              <varlistentry id="total">
+                <term>total</term>
+                <listitem>
+                  <para>
+                    The bytelocation the chunk ends.
+                    <replaceable>start</replaceable>-<replaceable>total</replaceable> can be seen as a range.
+                  </para>
+                </listitem>
+              </varlistentry>
+            </variablelist>
+          </textobject></synopsis>
+      </para>
+    </sect3>
+    <sect3>
+      <title>Reports</title>
+      <para>
+        Reporting of a transfer's progress will be done in a similar way for uploads and downloads. In fact,
+        the format looks a lot like <command>ADDdir</command>'s, only with a minor addition. The command for
+        reports is <command>CHGdir</command> (That means, <command>CHGUPLOAD</command> or
+        <command>CHGDOWNLOAD</command>. Please note that <command>CHGdir</command> will only be sent
+        when something actually changed.  By default it will not be sent more than once every second.
+        <synopsis label="server" id="trans_change">
+  <command>CHGdir</command>(<replaceable>session-id</replaceable>)
+     throughput (<replaceable>throughput</replaceable>)
+     elapsed (<replaceable>elapsed</replaceable>)
+     ...
+     [ADDdir's body]
+  ;
+          <textobject>
+            <variablelist>
+              <varlistentry>
+                <term>session-id</term>
+                <listitem>
+                  <para>
+                    See <xref linkend="session-id"/> and <xref linkend="session-ids"/>.
+                  </para>
+                </listitem>
+              </varlistentry>
+              <varlistentry id="throughput">
+                <term>throughput</term>
+                <listitem>
+                  <para>
+                    Number of bytes transferred since last <command>CHGdir</command>.
+                  </para>
+                </listitem>
+              </varlistentry>
+              <varlistentry id="elapsed">
+                <term>elapsed</term>
+                <listitem>
+                  <para>
+                    Number of milliseconds elapsed since last <command>CHGdir</command>.
+                  </para>
+                </listitem>
+              </varlistentry>
+            </variablelist>
+          </textobject></synopsis>
+      </para>
+    </sect3>
+    <sect3 id="pausing">
+      <title>Pausing / Cancelling</title>
+      <para>
+        To cancel a transfer (both uploads and downloads):
+        <synopsis label="client">
+  <command>TRANSFER</command>(<replaceable>session-id</replaceable>)
+     action (<replaceable>action</replaceable>)
+  ;
+          <textobject>
+            <variablelist>
+              <varlistentry>
+                <term>session-id</term>
+                <listitem>
+                  <para>
+                    See <xref linkend="session-id"/> and <xref linkend="session-ids"/>. Retrieve this info
+                    from the information <command>DONWLOADS</command>; and <command>UPLOADS</command>; dump.
+                  </para>
+                </listitem>
+              </varlistentry>
+              <varlistentry id="transfer_action">
+                <term>action</term>
+                <listitem>
+                  <para>
+                    <literal>cancel</literal>, <literal>pause</literal> or <literal>unpause</literal>. Pretty
+                    self-explainatory, right? :-)
+                  </para>
+                </listitem>
+              </varlistentry>
+            </variablelist>
+          </textobject></synopsis>
+      </para>
+      <para>
+        For downloads, you can also cancel only one source. This is done with the <command>DELSOURCE</command>
+        command:
+        <synopsis label="client">
+  <command>DELSOURCE(<replaceable>session-id</replaceable>)</command>
+     url (<replaceable>url</replaceable>)
+  ;
+          <textobject>
+            <variablelist>
+              <varlistentry>
+                <term>session-id</term>
+                <listitem>
+                  <para>
+                    See <xref linkend="session-id"/> and <xref linkend="session-ids"/>.
+                  </para>
+                </listitem>
+              </varlistentry>
+              <varlistentry>
+                <term>url</term>
+                <listitem>
+                  <para>
+                    See <xref linkend="url"/>.
+                  </para>
+                </listitem>
+              </varlistentry>
+            </variablelist>
+          </textobject></synopsis>
+      </para>
+    </sect3>
+    <sect3>
+      <title>Finished transfers</title>
+      <para>
+        When a transfer finished (because it has completed or has been cancelled), the
+        <command>DELdir</command> (<command>DELUPLOAD</command> or
+        <command>DELDOWNLOAD</command>) command
+        will be sent. It's format is clear and simple:
+        <synopsis label="server" role="oneliner">  <command>DELdir(<replaceable>session-id</replaceable>)</command>;</synopsis>
+        </para>
+    </sect3>
+  </sect2>
+  <sect2>
+    <title>Shared Files</title>
+    <sect3>
+      <title>Manipulation</title>
+      <para>
+	To manipulate the shares index you may use:
+	<synopsis label="client">
+    <command>SHARE</command>
+       <optional>action (<replaceable>action</replaceable>)</optional>
+    ;
+	  <textobject>
+	    <variablelist>
+	      <varlistentry id="share_action">
+		<term>action</term>
+		<listitem>
+		  <para>
+		    <literal>sync</literal>, <literal>hide</literal> or <literal>show</literal>. If
+		    you omit the value of action, the current action will be shown.
+		  </para>
+		</listitem>
+	      </varlistentry>
+	    </variablelist>
+	  </textobject></synopsis>
+	The server will return the action that is currently processing on all share changes.  So if you do a
+	<literal>SHARE action(hide)</literal>, the server will resond with exactly the same.
+	<synopsis label="server">
+    <command>SHARE</command>
+       <optional>action (<replaceable>action</replaceable>)</optional>
+       <optional>status (<replaceable>action status</replaceable>)</optional>
+    ;
+	  <textobject>
+	    <variablelist>
+	      <varlistentry>
+		<term>action</term>
+		<listitem>
+		  <para>
+		    See <xref linkend="share_action"/>. No <literal>action()</literal> means there's nothing going on.
+		  </para>
+		</listitem>
+	      </varlistentry>
+	      <varlistentry id="action_status">
+		<term>action status</term>
+		<listitem>
+		  <para>
+		    The status of the current action. Only shown if <literal>action (sync)</literal>.  Contains
+		    the current number of processed files.
+		  </para>
+		</listitem>
+	      </varlistentry>
+	    </variablelist>
+	  </textobject></synopsis>
+      </para>
+    </sect3>
+    <sect3>
+      <title>Listing your shares</title>
+      <para>
+	To see all the files you share (according to giFT, not to the protocols), you can use this nifty
+	oneliner:
+        <synopsis label="client" role="oneliner">  <command>SHARES(<replaceable>session-id</replaceable>)</command>;</synopsis>
+	To which the server will respond with
+	<synopsis label="server">
+  <command>ITEM</command> (<replaceable>session-id</replaceable>)
+     <optional>path (<replaceable>path and filename</replaceable>)</optional>
+     size (<replaceable>filesize</replaceable>)
+     mime (<replaceable>mime-type</replaceable>)
+     <optional>hash (<replaceable>hash</replaceable>)</optional>
+     <optional><command>META</command> {
+       <replaceable>name</replaceable> (<replaceable>value</replaceable>)
+     }</optional>
+  ;
+          <textobject>
+            <variablelist>
+              <varlistentry>
+                <term>session-id</term>
+                <listitem>
+                  <para>
+                    See <xref linkend="session-id"/> and <xref linkend="session-ids"/>. This is the same id
+                    that was specified for the <command>SHARES</command>;.
+                  </para>
+                </listitem>
+              </varlistentry>
+              <varlistentry id="path">
+                <term>path and filename</term>
+                <listitem>
+                  <para>
+		    The name of the file including path.
+                  </para>
+                </listitem>
+              </varlistentry>
+              <varlistentry>
+                <term>filesize</term>
+                <listitem>
+                  <para>
+		    See <xref linkend="filesize"/>.
+                  </para>
+                </listitem>
+              </varlistentry>
+              <varlistentry>
+                <term>mime-type</term>
+                <listitem>
+                  <para>
+		    See <xref linkend="mime"/>.
+                  </para>
+                </listitem>
+              </varlistentry>
+              <varlistentry>
+                <term>hash</term>
+                <listitem>
+                  <para>
+		    See <xref linkend="hash"/>.
+                  </para>
+                </listitem>
+              </varlistentry>
+            </variablelist>
+          </textobject></synopsis>
+      </para>
+    </sect3>
+  </sect2>
+  <sect2>
+    <title>Protocol Statistics</title>
+    <para>
+      Request stats dump explicitly:
+      <synopsis label="client" role="oneliner">   <command>STATS</command>;</synopsis>
+      Stats response:
+      <synopsis label="server">
+  <command>STATS</command>
+     <replaceable>protocol</replaceable>* {
+        <optional>users (<replaceable>users</replaceable>)</optional>
+        files (<replaceable>files</replaceable>)
+        size  (<replaceable>total size</replaceable>)
+  ;
+        <textobject>
+          <variablelist>
+            <varlistentry id="protocol_stats">
+              <term>protocol</term>
+              <listitem>
+                <para>
+                  The name of the protocol(s) to request the stats from. Use <literal>giFT</literal> for local
+                  stats. If no protocols are given, stats for all protocols will be returned.
+                </para>
+              </listitem>
+            </varlistentry>
+            <varlistentry id="users">
+              <term>users</term>
+              <listitem>
+                <para>
+                  Number of users.
+                </para>
+              </listitem>
+            </varlistentry>
+            <varlistentry id="files">
+              <term>files</term>
+              <listitem>
+                <para>
+                  Number of files.
+                </para>
+              </listitem>
+            </varlistentry>
+            <varlistentry id="total_size">
+              <term>total size</term>
+              <listitem>
+                <para>
+                  The total size of all files (float). Given in GB.
+                </para>
+              </listitem>
+            </varlistentry>
+          </variablelist>
+        </textobject></synopsis>
+    </para>
+  </sect2>
+<!--
+  <sect2>
+    <title>Configuration File Manipulation</title>
+    <para>TODO</para>
+  </sect2>
+-->
+  <sect2>
+    <title>Exiting</title>
+    <para>
+      To shutdown giFT, you can use the <command>QUIT</command> command:
+      <synopsis label="client" role="oneliner">  <command>QUIT</command>;</synopsis>
+      Simple as that. Please note that unlike <link linkend="detach"><command>DETACH</command>;</link>, all
+      transfers will be stopped too. (giFT automatically resumes downloads, for protocols that support it, on
+      start up.)
+    </para>
+  </sect2>
+</sect1>
+</article>

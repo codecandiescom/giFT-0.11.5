@@ -1,0 +1,77 @@
+/*
+ * $Id: giftconfig.h.in,v 1.7 2003/12/23 03:28:59 jasta Exp $ -*- C -*-
+ *
+ * Copyright (C) 2001-2003 giFT project (gift.sourceforge.net)
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the
+ * Free Software Foundation; either version 2, or (at your option) any
+ * later version.
+ *
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ */
+
+#ifndef __GIFTCONFIG_H
+#define __GIFTCONFIG_H
+
+/*****************************************************************************/
+
+/**
+ * @file giftconfig.h
+ *
+ * @brief Compile-time libgiFT environment configuration.
+ *
+ * This file is produced automagically by autoconf during configure.  It
+ * includes some hardcoded features of the basic libgiFT environment as well
+ * as some determined by autoconf.
+ */
+
+/*****************************************************************************/
+
+#ifdef __cplusplus
+#define EXTERN_C_BEGIN extern "C" {
+#define EXTERN_C_END   }
+#else /* !__really_crappy_language */
+#define EXTERN_C_BEGIN
+#define EXTERN_C_END
+#endif /* __really_crappy_language */
+
+/*****************************************************************************/
+
+/*
+ * Import all the configured features that need to be installed here.
+ */
+#ifndef _MSC_VER
+@GIFT_FEATURES@
+
+#define LIBGIFT_VERSION                   \
+    ((((@LIBGIFT_MAJOR@) & 0xff) << 16) | \
+     (((@LIBGIFT_MINOR@) & 0xff) << 8) |  \
+     (((@LIBGIFT_MICRO@) & 0xff)))
+#define LIBGIFT_VERSIONSTR @LIBGIFT_VERSIONSTR@
+
+#else /* _MSC_VER */
+/*
+ * This is an ugly hack but it works until we figure out a better way to do
+ * it.
+ */
+#include "giftconfig_win32.h"
+#endif /* !_MSC_VER */
+
+/*****************************************************************************/
+
+/* some functions have a leading underscore on windows */
+#if !defined(HAVE_SNPRINTF) && defined(HAVE__SNPRINTF)
+# define snprintf _snprintf
+#endif /* !HAVE_SNPRINTF && HAVE__SNPRINTF */
+
+#if !defined(HAVE_VSNPRINTF) && defined(HAVE__VSNPRINTF)
+# define vsnprintf _vsnprintf
+#endif /* !HAVE_VSNPRINTF && HAVE__VSNPRINTF */
+
+/*****************************************************************************/
+
+#endif /* __GIFTCONFIG_H */

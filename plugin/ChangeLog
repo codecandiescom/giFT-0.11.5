@@ -1,0 +1,24 @@
+$Id: ChangeLog,v 1.9 2003/12/23 03:54:46 jasta Exp $
+
+libgiftproto 0.11.5:
+
+   * Fixed bug that might result in a leaked Hash object copy.
+
+   * Major win32 portability improvements.
+
+libgiftproto 0.11.4:
+
+   * Synchronized the version to match giftd.
+
+libgiftproto 0.11.3:
+
+   * Synchronized the version to match giftd.
+
+libgiftproto 0.11.2:
+
+   * Changed protocol compatibility so that only major and minor version
+     identifiers differences are considered fatal.
+
+libgiftproto 0.11.1:
+
+   * Synchronized the version to match giftd.

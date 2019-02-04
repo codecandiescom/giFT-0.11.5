@@ -1,0 +1,114 @@
+# $Id: Makefile.msvc,v 1.20 2003/10/16 18:50:54 jasta Exp $
+# Microsoft Visual C++ 6.0 makefile
+# see README.msvc for usage
+
+!if !defined(BUILD_ROOT)
+BUILD_ROOT=$(MAKEDIR)\..
+!endif
+
+!include Make.msvc
+
+MAKEOPTS=-nologo -C BUILD_ROOT=$(BUILD_ROOT)
+
+all: autoconf
+	cd win32
+	@$(MAKE) $(MAKEOPTS) -f Makefile.msvc
+
+	cd ..\lib
+	@$(MAKE) $(MAKEOPTS) -f Makefile.msvc
+
+	cd ..\plugin
+	@$(MAKE) $(MAKEOPTS) -f Makefile.msvc
+
+	cd ..\src
+	@$(MAKE) $(MAKEOPTS) -f Makefile.msvc
+
+	cd ..\win32\giFTsetup
+	@$(MAKE) $(MAKEOPTS) -f Makefile.msvc
+
+	cd ..\giFTtray
+	@$(MAKE) $(MAKEOPTS) -f Makefile.msvc
+
+	cd ..\..
+
+install: autoconf create-libgift-dirs
+	cd win32
+	@$(MAKE) $(MAKEOPTS) -f Makefile.msvc install
+
+	cd ..\lib
+	@$(MAKE) $(MAKEOPTS) -f Makefile.msvc install
+
+	cd ..\plugin
+	@$(MAKE) $(MAKEOPTS) -f Makefile.msvc install
+	
+	cd ..\src
+	@$(MAKE) $(MAKEOPTS) -f Makefile.msvc install
+
+	cd ..\win32\giFTsetup
+	@$(MAKE) $(MAKEOPTS) -f Makefile.msvc install
+
+	cd ..\giFTtray
+	@$(MAKE) $(MAKEOPTS) -f Makefile.msvc install
+
+	cd ..\..
+
+clean: clean-autoconf clean-libgift-dirs
+	cd win32
+	@$(MAKE) $(MAKEOPTS) -f Makefile.msvc clean
+
+	cd ..\lib
+	@$(MAKE) $(MAKEOPTS) -f Makefile.msvc clean
+
+	cd ..\plugin
+	@$(MAKE) $(MAKEOPTS) -f Makefile.msvc clean
+
+	cd ..\src
+	@$(MAKE) $(MAKEOPTS) -f Makefile.msvc clean
+
+	cd ..\win32\giFTsetup
+	@$(MAKE) $(MAKEOPTS) -f Makefile.msvc clean
+
+	cd ..\giFTtray
+	@$(MAKE) $(MAKEOPTS) -f Makefile.msvc clean
+
+	cd ..\..
+
+
+autoconf:
+	@copy /Y lib\giftconfig.h.in lib\giftconfig.h
+	@copy /Y plugin\protocol_ver.h.in plugin\protocol_ver.h
+
+clean-autoconf:
+	@-del /f lib\giftconfig.h
+	@-del /f plugin\protocol_ver.h
+
+
+create-libgift-dirs:
+	@-md $(BUILD_ROOT)\libgift
+	@-md $(BUILD_ROOT)\libgift\proto
+	@-md $(BUILD_ROOT)\libgift\win32
+
+clean-libgift-dirs:
+	@-rmdir /S $(BUILD_ROOT)\libgift
+
+
+win32-dist: install
+	@-md $(BUILD_ROOT)\win32-dist
+	@-md $(BUILD_ROOT)\win32-dist\data
+	@for %f in ($(DIST_DLLS)) DO copy %f $(BUILD_ROOT)\win32-dist
+	@copy /Y src\$(GIFT_EXE)         $(BUILD_ROOT)\win32-dist
+	@copy /Y data\mime.types         $(BUILD_ROOT)\win32-dist\data
+	@copy /Y etc\giftd.conf.template $(BUILD_ROOT)\win32-dist\giftd.conf
+	@copy /Y README      	$(BUILD_ROOT)\win32-dist
+	@copy /Y AUTHORS     	$(BUILD_ROOT)\win32-dist
+	@copy /Y NEWS        	$(BUILD_ROOT)\win32-dist
+	@copy /Y COPYING     	$(BUILD_ROOT)\win32-dist
+	@copy /Y win32\nsisprep.pl $(BUILD_ROOT)\win32-dist
+	@copy /Y win32\gift.nsi    $(BUILD_ROOT)\win32-dist
+	@-md $(BUILD_ROOT)\win32-dist\giFTsetup
+	@-md $(BUILD_ROOT)\win32-dist\giFTtray
+	@copy /Y win32\giFTsetup\giFTsetup.exe $(BUILD_ROOT)\win32-dist\giFTsetup
+	@copy /Y win32\giFTtray\giFTtray.exe   $(BUILD_ROOT)\win32-dist\giFTtray
+
+clean-dist:
+	@-rmdir /S $(BUILD_ROOT)\win32-dist

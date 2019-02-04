@@ -1,0 +1,7 @@
+$Id: README,v 1.1 2003/06/30 09:15:21 jasta Exp $
+
+Bridge library used by both the giFT daemon and giFT protocol plugins to
+provide appropriate definitions (and documentation) for the communication
+defined between the two.  A great majority of the interaction between these
+two components is defined by a single interface in protocol.h, which is
+naturally heavily documented internally.

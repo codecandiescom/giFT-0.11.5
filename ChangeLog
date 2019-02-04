@@ -1,0 +1,123 @@
+$Id: ChangeLog,v 1.24 2003/07/11 23:54:21 jasta Exp $
+
+This ChangeLog has been moved to src/ChangeLog.  Each giFT component maintains
+its own separate ChangeLog to make it easier to understand which changes apply
+to which component.
+
+For legacy purposes, the pre-0.10.0 ChangeLog was recovered and will be shown
+here.  Note that the project was completely redesigned and rewritten after the
+last public release (0.9.7).
+
+giFT 0.10.0 (cvs):
+
+   * giFT is now a completely different project.  The rest of the ChangeLog
+     is provided for legacy purposes only.
+
+giFT 0.9.7:
+
+   * Information lost.
+
+giFT 0.9.6:
+
+   * Information lost.
+
+giFT 0.9.5:
+
+   * The library (libgiFT.a) now supports parallel downloading of files from
+     peers.
+   * The giFT daemon does not do the parallel download, but there is a new
+     program (giFTget) which does. You can use it to see how to integrate
+     parallel downloading into your own clients, or you can just use that one.
+   * giFTget is now integrated with the CGI frontend (giFT.cgi) and a new
+     helper application (giFTquerycgi) for a usable parallel-download mechanism
+     for the CGI interface.
+
+giFT 0.9.4:
+
+   * File sharing now works! Other people can now search for and download our
+     files. There's no limit yet on upload bandwidth or number of simultaneous
+     connections, though. Next time.
+   * You can specify what IP address to listen for connections from peers on
+     with the -l option. Default is to listen on all addresses.
+   * You can now search on any tag type, with any search type.
+
+giFT 0.9.3:
+
+   * We now advertise to supernodes the list of files we're sharing! If
+     someone tries to connect to us to fetch the file, however, we'll just ignore
+     them for now. The files have no metadata associated with them other than
+     their filename. Handlers need to be written for specific file types in
+     order to extract the correct metadata.
+   * Terminology: the "hash" is the 16-byte cryptographic hash, plus the
+     4-byte "short hash". The "checksum" is the 2-byte value that goes in the
+     URL.
+   * We can now do searches for a given hash value. Format: <search
+     hash="ed22df40ef1e0b3f641f189936dfe7aefad99053"/>
+   * We now advertise what port we're listening on for connections from
+     peers, though we don't do anything with that socket yet.
+   * The workaround below failed on slow connections. This version will wait
+     longer for a response from the supernode.
+   * If we get as far as trying to decrypt the session with the supernode,
+     then if we disconnect (because, for example, some crypto bits happen to
+     fail, or the net goes away temporarily, or whatever), then automatically
+     try to reconnect.
+
+giFT 0.9.2.2:
+
+   * Worked around FT's "security update" which prevented giFT from working.
+   * Did an extra sanity check when receiving packets.
+   * Separated out FileDescription from FileEntry, for later use with
+     the sharing protocol.
+
+giFT 0.9.2.1:
+
+   * Replaced the shell to wget with native code when fetching a new
+     .giFTnodes file
+   * All routines that touch the nodes file have been moved into nodes.c.
+   * Made allow_probe into a runtime variable instead of a compile-time
+     option. There's still no way to set it except by modifying the source at
+     this time. Eventually, it will be a command-line option.
+   * The sequence is now:
+   * Read the .giFTnodes file
+   * If there's nothing there, try to fetch a new one from the web
+   * If there's still nothing, and allow_probes is set, probe
+   * Realized the "usertag" is more likely an indication of
+     bandwidth. But we're still not too sure about that.
+   * Moved from kazaatux to gift.
+
+giFT 0.9.2:
+
+   * Fixed a bunch of free() calls that assumed that free(NULL) is a
+     no-op, which isn't necessarily the case
+   * Added support for giFT keeping track of supernode-reported statictics
+     (packet type 0x09). These statistics are reported on the console, and can be
+     queried by a client.
+   * We're a little more careful with use of "const".
+   * Changed the command line functionality. No more can you put IP
+     addresses of nodes on the command line (put them in the .giFTnodes file
+     instead). Now, there are options to control behavior.
+   * Changed the peer-finding strategy if we run out of nodes to check. Now
+     we fetch a .giFTnodes file from sourceforge. We also send that site our
+     .giFTnodes file periodically.
+   * Updated README file to reflect new peer-finding strategy, complex
+     queries, and statistics
+   * Sockets to giFT clients weren't non-blocking. Fixed.
+   * Added support for packet type 0x09 (statistics)
+   * We no longer probe 24.0.0.0/8 by default; instead, try to
+     download a .giFTnodes file from some known URL
+   * Reread the .giFTnodes file periodically, if it's been changed out from
+     under us.
+   * Listen for connections from peers on port 1214, but don't do anything
+     with them just yet.
+
+giFT 0.9.1:
+
+   * We now send queries to all the supernodes we're connected to, not just
+     one. We get a lot more (and different) results that way.
+   * We now support complex search queries. The CGI interface has also been
+     updated accordingly. The fact that there's supposed to be about 400TB of
+     data on this network is much more apparent.
+
+giFT 0.9.0:
+
+   * Initial release to sourceforge.net

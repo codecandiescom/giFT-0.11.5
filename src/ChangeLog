@@ -1,0 +1,64 @@
+$Id: ChangeLog,v 1.19 2003/12/23 21:57:01 jasta Exp $
+
+giftd 0.11.5:
+
+   * Case-insensitive scheme names in protocol-specific URLs in an
+     ongoing effort to comply with RFC1738.
+
+   * Fixed a minor memory leak when searching on non-ATTACH'd sessions.
+
+   * Fixed a potential race condition where the forked share_cache.c child
+     might use the memory local to gift_conf_path.  Perhaps other
+     thread-safety issues exist?
+
+   * Minor cleanups in download.c to fix an obscure throttling bug.
+   
+   * Decreased the minimum chunk size to 100KB to obscure the lack of proper
+     source election for the last part of a transfer.
+     
+   * Fixed a problem writing state files for downloads which have no plugin
+     hash associated.  This is extremely common on some networks such as
+     Gnutella and OpenNap.
+
+   * If we have a problem writing the state file or temporary data
+     for a transfer, abort the entire giftd process rather than pretend to
+     gracefully handle the condition.  This condition always results in
+     a corrupted transfer if it is unpaused as there is no rollback method
+     implemented.
+
+   * Fixed a bug that would prevent loading plugins from the command-line in
+     the current directory without prefixing the plugin name with "./".
+
+   * Major win32 portability improvements.
+
+giftd 0.11.4:
+
+   * Made the upload queue support small chunks better.  The upload slot is
+     now retained across requests until a size allocation is exceeded.
+
+giftd 0.11.3:
+
+   * Added new command line switches to override the compile time directory
+     paths.  This is useful for projects which are attempting to package
+     giFT in a self-contained distribution.  See giftd -h.
+
+   * Various build environment improvements.
+
+giftd 0.11.2:
+
+   * Separated OpenFT and Gnutella into their own modules, and in the process
+     inadvertantly broke the optional libltdl support (it will not work
+     without).  Hopefully this will be corrected in future releases.
+
+   * Renamed several components to their lowercase alternatives.  Also changed
+     the giFT binary to giftd and updated the name of gift.log and gift.conf
+     to reflect this change.
+
+giftd 0.11.1:
+
+   * First public release.  Enjoy :)
+
+giftd 0.10.0:
+
+   * Rewritten from the ground up.  See the ChangeLog in the parent
+     directory for more information on what giFT once was.

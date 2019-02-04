@@ -1,0 +1,54 @@
+$Id: AUTHORS,v 1.25 2003/12/13 13:28:22 jasta Exp $
+
+Core Development and Administration:
+
+  * Josh Guilfoyle <jasta@gotlinux.org>:
+    - Project administrator
+    - Core developer
+    - OpenFT design and implementation
+
+  * Eelco Lempsink <eelco@33lc0.net>:                 [ Low Activity ]
+    - Project administrator
+    - Documentation maintainer
+
+  * Craig Barnes <hbelfaq@softhome.net>:
+    - Gnutella plugin
+    - Many bug fixes and design points
+
+  * Per Olofsson <pelle@dsv.su.se>:                   [ Inactive ]
+    - Windows portability
+
+  * Ross Smith <rossta@users.sourceforge.net>:        [ Low Activity ]
+    - Windows portability
+
+Additional Contributions:
+
+  * Markus Kern <mkern@users.berlios.de>:
+    - FastTrack plugin
+    - Bug fixes, small patches
+    - Windows portability
+
+  * Tilman Sauerbeck <tilman@code-monkey.de>:
+    - OpenNap plugin
+
+  * Göran Weinholt <weinholt@dtek.chalmers.se>:
+    - Bug fixes, interface protocol design points, generally good guy, ...
+
+  * Philip Walls <malverian@users.sourceforge.net>:
+    - Gish project maintainer
+    - Original giFT-setup and other minor changes
+
+  * Tom Hargreaves <hex@freezone.co.uk>:
+    - OpenFT/ft_search_db.c hackery and other patches
+
+  * Robert McQueen <robot101@debian.org>:
+    - Debian packaging
+
+  * Franco Catrin <fcatrin@tuxpan.com>:
+    - RPM packaging
+
+  * Tomasz Matuszcyzk <tomasz@theproject.nu>:
+    - giftproject.org design
+
+
+...and surely many more people that I can't immediately remember, sorry.
